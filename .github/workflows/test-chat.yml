@@ -1,0 +1,86 @@
+name: Test chat
+
+on:
+  # Manual trigger
+  workflow_dispatch:
+    inputs:
+      queue:
+        description: 'Testflinger queue'
+        required: true
+        type: string
+      snap-name:
+        description: 'Snap name'
+        required: true
+        type: string
+      channel:
+        description: 'Snap store channel'
+        required: true
+        type: string
+      expected-engine:
+        description: 'Engine that we expect to be automatically chosen'
+        required: false
+        type: string
+      select-engine:
+        description: 'Engine to explicitly select'
+        required: false
+        type: string
+      expected-tps:
+        description: 'Expected inference speed'
+        required: false
+        type: string
+        default: "0"
+      install-nvidia-driver-version:
+        description: 'NVIDIA driver version to install (if applicable)'
+        required: false
+        type: string
+
+jobs:
+  test:
+    name: Test
+    # Need to use self-hosted private endpoint runner to access Testflinger
+    runs-on: self-hosted-linux-amd64-jammy-private-endpoint-medium
+
+    env:
+      TEST_DIR: test-chat
+
+    steps:
+      - name: Show configuration
+        run: |
+          echo ::notice::\
+          Snap: ${{ inputs.snap-name }}, \
+          Channel: ${{ inputs.channel }}, \
+          Test: ${{ inputs.test-name }}, \
+          Queue: ${{ inputs.queue }}, \
+          Select engine: ${{ inputs.select-engine }}, \
+          Expect engine: ${{ inputs.expected-engine }}, \
+          Expect TPS: ${{ matrix.jobs.expected-tps }}, \
+          Install NVIDIA driver: ${{ inputs.install-nvidia-driver-version }}
+
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Add config to testflinger job
+        env:
+          SNAP_NAME: ${{ inputs.snap-name }}
+          SNAP_CHANNEL: ${{ inputs.channel }}
+          JOB_QUEUE: ${{ inputs.queue }}
+          EXPECTED_ENGINE: ${{ inputs.expected-engine }}
+          EXPECTED_TPS: ${{ inputs.expected-tps }}
+          INSTALL_NVIDIA_DRIVER_VERSION: ${{ inputs.nvidia-driver-version }}
+          SELECT_ENGINE: ${{ inputs.select-engine }}
+
+        run: |
+          envsubst \
+            < $TEST_DIR/testflinger.yaml \
+            > $TEST_DIR/testflinger.temp.yaml
+          mv $TEST_DIR/testflinger.temp.yaml $TEST_DIR/testflinger.yaml
+
+      - name: Print testflinger job
+        run: |
+          cat ${{ env.TEST_DIR }}/testflinger.yaml
+
+      - name: Run testflinger job
+        uses: canonical/testflinger/.github/actions/submit@main
+        with:
+          poll: true
+          job-path: ${{ env.TEST_DIR }}/testflinger.yaml
