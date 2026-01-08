@@ -106,7 +106,7 @@ echo "::group::Waiting to chat"
 max_retries=20
 retry_count=0
 retry_delay=30
-until _run bash -c 'echo "hi" | '"$SNAP_NAME"' chat --verbose'; do
+until _run bash -c 'echo "hi" | '"$SNAP_NAME"' chat'; do
   retry_count=$((retry_count + 1))
   if [ $retry_count -ge $max_retries ]; then
     echo "Get logs"
