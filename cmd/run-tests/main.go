@@ -11,6 +11,20 @@ import (
 	"go.yaml.in/yaml/v4"
 )
 
+/*
+   #!/bin/bash -eu
+
+   # These vars are replaced by envsubst in the caller. Either in run.sh or the Github workflow.
+   export SNAP_NAME=$SNAP_NAME
+   export SNAP_CHANNEL=$SNAP_CHANNEL
+   export EXPECTED_ENGINE=$EXPECTED_ENGINE
+   export EXPECTED_TPS=$EXPECTED_TPS
+   export INSTALL_NVIDIA_DRIVER_VERSION=$INSTALL_NVIDIA_DRIVER_VERSION
+   export SELECT_ENGINE=$SELECT_ENGINE
+
+   exec attachments/test/agent.sh
+*/
+
 func getAPIBase() string {
 	if server := os.Getenv("TESTFLINGER_SERVER"); server != "" {
 		return server
@@ -55,6 +69,8 @@ func main() {
 		os.Exit(1)
 	}
 	fmt.Printf("Job submitted with ID: %s\n", jobID)
+
+	// Upload attachments
 
 	// Poll job status and print logs
 	err = PollStatusAndLogs(ctx, client, jobID)

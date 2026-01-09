@@ -1,8 +1,14 @@
 package testflinger
 
 import (
+	"bytes"
 	"context"
 	"fmt"
+	"io"
+	"mime/multipart"
+	"net/http"
+	"os"
+	"path/filepath"
 	"strings"
 )
 
@@ -65,5 +71,70 @@ func CancelJob(ctx context.Context, client *ClientWithResponses, jobID string) e
 	if resp.StatusCode() != 200 {
 		return fmt.Errorf("Job cancellation failed: %s\n%s\n", resp.Status(), string(resp.Body))
 	}
+	return nil
+}
+
+func UploadAttachment(ctx context.Context, client *ClientWithResponses, jobID string, filePath string) error {
+	// Open the file to be uploaded
+	file, err := os.Open(filePath)
+	if err != nil {
+		return fmt.Errorf("failed to open file: %v", err)
+	}
+	defer func() {
+		if closeErr := file.Close(); closeErr != nil {
+			// Log but don't return error for defer
+		}
+	}()
+
+	// Create a multipart form with the file
+	var body bytes.Buffer
+	writer := multipart.NewWriter(&body)
+	part, err := writer.CreateFormFile("file", filepath.Base(file.Name()))
+	if err != nil {
+		return fmt.Errorf("failed to create form file: %v", err)
+	}
+	_, err = io.Copy(part, file)
+	if err != nil {
+		return fmt.Errorf("failed to copy file: %v", err)
+	}
+	if err := writer.Close(); err != nil {
+		return fmt.Errorf("failed to close multipart writer: %v", err)
+	}
+
+	// Get the underlying *Client from ClientWithResponses
+	// ClientWithResponses embeds ClientInterface which is actually *Client
+	baseClient, ok := interface{}(client.ClientInterface).(*Client)
+	if !ok {
+		return fmt.Errorf("failed to get underlying client")
+	}
+
+	// Create a new HTTP request with the multipart body
+	req, err := http.NewRequestWithContext(ctx, "POST",
+		baseClient.Server+"/v1/job/"+jobID+"/attachments",
+		&body)
+	if err != nil {
+		return fmt.Errorf("failed to create request: %v", err)
+	}
+
+	// Set the Content-Type header to multipart/form-data with the boundary
+	req.Header.Set("Content-Type", writer.FormDataContentType())
+
+	// Execute the request
+	resp, err := baseClient.Client.Do(req)
+	if err != nil {
+		return fmt.Errorf("failed to upload attachment: %v", err)
+	}
+	defer func() {
+		if closeErr := resp.Body.Close(); closeErr != nil {
+			// Log but don't return error for defer
+		}
+	}()
+
+	// Check the response status
+	if resp.StatusCode != http.StatusOK {
+		respBody, _ := io.ReadAll(resp.Body)
+		return fmt.Errorf("failed to upload attachment: HTTP %d: %s", resp.StatusCode, string(respBody))
+	}
+
 	return nil
 }

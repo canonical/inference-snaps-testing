@@ -7,7 +7,58 @@ import (
 	"time"
 )
 
-func TestSubmitJob(t *testing.T) {
+func TestSubmitCancelJob(t *testing.T) {
+	ctx := context.Background()
+
+	client, err := NewClientWithResponses("https://testflinger.canonical.com")
+	if err != nil {
+		t.Fatalf("Failed to create Testflinger client: %v", err)
+	}
+
+	var job Job
+
+	name := "test-job"
+	job.Name = &name
+
+	job.JobQueue = "maas-systemtests-amd64"
+
+	//var provisionData Job_ProvisionData
+	//err = provisionData.FromProvisionData(map[string]interface{}{
+	//	"distro": "noble",
+	//})
+	//if err != nil {
+	//	t.Fatalf("Failed to set provision data: %v", err)
+	//}
+	//job.ProvisionData = &provisionData
+
+	testCommands := "hostname\n"
+	var testData TestData
+	testData.TestCmds = &testCommands
+	job.TestData = &testData
+
+	jobID, err := SubmitJob(ctx, client, job)
+	if err != nil {
+		t.Fatalf("SubmitJob failed: %v", err)
+	}
+
+	if jobID == "" {
+		t.Fatalf("Expected non-empty job ID")
+	}
+	t.Logf("Submitted job: %s", jobID)
+
+	//// Immediately cancel job as we are only interested in a successful submit
+	//err = CancelJob(ctx, client, jobID)
+	//if err != nil {
+	//	t.Fatalf("Failed to cancel job: %v", err)
+	//}
+
+	err = pollStatusAndLogs(ctx, client, jobID)
+	if err != nil {
+		t.Fatalf("Error while polling job status and logs: %v", err)
+	}
+}
+
+func TestJobWithAttachment(t *testing.T) {
 	ctx := context.Background()
 
 	client, err := NewClientWithResponses("https://testflinger.canonical.com")
@@ -29,11 +80,16 @@ func TestSubmitJob(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Failed to set provision data: %v", err)
 	}
-	//job.ProvisionData = &provisionData
+	job.ProvisionData = &provisionData
 
-	testCommands := "hostname\n"
+	testCommands := "exec attachments/test/attachment.sh\n"
 	var testData TestData
 	testData.TestCmds = &testCommands
+	testData.Attachments = &[]Attachment{{
+		Agent:  "attachment.sh",
+		Device: nil,
+	},
+	}
 	job.TestData = &testData
 
 	jobID, err := SubmitJob(ctx, client, job)
@@ -46,15 +102,45 @@ func TestSubmitJob(t *testing.T) {
 	}
 	t.Logf("Submitted job: %s", jobID)
 
-	err = CancelJob(ctx, client, jobID)
+	t.Cleanup(func() {
+		_ = CancelJob(ctx, client, jobID)
+	})
+
+	// Upload attachment
+	err = UploadAttachment(ctx, client, jobID, "../../test-data/attachments.tar.gz")
 	if err != nil {
-		t.Fatalf("Failed to cancel job: %v", err)
+		t.Fatalf("Failed to upload attachment: %v", err)
 	}
 
 	err = pollStatusAndLogs(ctx, client, jobID)
 	if err != nil {
 		t.Fatalf("Error while polling job status and logs: %v", err)
 	}
+}
+
+func pollStatus(ctx context.Context, client *ClientWithResponses, jobID string) error {
+
+	consecutiveErrors := 0
+	for {
+		status, err := GetJobStatus(ctx, client, jobID)
+		if err != nil {
+			consecutiveErrors++
+			if consecutiveErrors%3 == 0 {
+				return fmt.Errorf("Warning: Failed to get job status: %v (attempt %d)\n", err, consecutiveErrors)
+			}
+			time.Sleep(5 * time.Second)
+			continue
+		}
+
+		if status == "complete" || status == "completed" || status == "cancelled" || status == "failed" {
+			fmt.Printf("\nJob finished with state: %s\n", status)
+			break
+		}
+
+		fmt.Println(status)
+		time.Sleep(5 * time.Second)
+	}
+	return nil
 }
 
 func pollStatusAndLogs(ctx context.Context, client *ClientWithResponses, jobID string) error {
