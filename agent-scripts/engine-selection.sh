@@ -12,6 +12,10 @@ if [[ -n "${SELECT_ENGINE}" ]]; then
   _run sudo "$SNAP_NAME" use-engine "$SELECT_ENGINE"
   wait_for_snap_changes
 
+  # Restart server after changing engine
+  _run sudo snap restart "$SNAP_NAME"
+  wait_for_snap_changes
+
   # Set expected engine to the selected one
   EXPECTED_ENGINE=$SELECT_ENGINE
   echo "::endgroup::"
