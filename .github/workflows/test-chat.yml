@@ -63,8 +63,8 @@ jobs:
           Select engine: ${{ inputs.select-engine }}, \
           Expect engine: ${{ inputs.expected-engine }}, \
           Expect TPS: ${{ inputs.expected-tps }}, \
-          Install NVIDIA driver: ${{ inputs.install-nvidia-driver-version }}
-          Install Intel NPU driver: ${{ inputs.install-intel-npu-driver }}
+          Install NVIDIA driver: ${{ inputs.install-nvidia-driver-version }}, \
+          Install Intel NPU driver: ${{ inputs.install-intel-npu-driver }}, \
 
       - name: Checkout code
         uses: actions/checkout@v6
