@@ -15,7 +15,7 @@ jobs:
     with:
       snap-name: deepseek-r1
       snap-channel: ${{ inputs.snap-channel }}
-      job-queue: 202305-31589 # Alder Lake, GPU 8086:4692
+      job-queue: 202111-29603 # Alder Lake, GPU 8086:4680
       provision-data: "distro: noble"
       expected-engine: ""
       select-engine: "intel-gpu"
