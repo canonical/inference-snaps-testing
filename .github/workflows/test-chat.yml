@@ -8,6 +8,10 @@ on:
         description: 'Testflinger queue'
         required: true
         type: string
+      provision-data:
+        description: 'Testflinger provision data in yaml format'
+        required: false
+        type: string
       snap-name:
         description: 'Snap name'
         required: true
@@ -17,7 +21,7 @@ on:
         required: true
         type: string
       expected-engine:
-        description: 'Engine that we expect to be automatically chosen'
+        description: 'Engine expected to be used'
         required: false
         type: string
       select-engine:
@@ -75,12 +79,19 @@ jobs:
             > $TEST_DIR/testflinger.temp.yaml
           mv $TEST_DIR/testflinger.temp.yaml $TEST_DIR/testflinger.yaml
 
+      - name: Add provision data
+        if: inputs.provision-data != ''
+        env:
+          PROVISION_DATA: ${{ inputs.provision-data }}
+        run: |
+          yq eval ".provision_data = strenv(PROVISION_DATA)" -i ${{ env.TEST_DIR }}/testflinger.yaml
+
       - name: Print testflinger job
         run: |
           cat ${{ env.TEST_DIR }}/testflinger.yaml
 
-      - name: Run testflinger job
-        uses: canonical/testflinger/.github/actions/submit@main
-        with:
-          poll: true
-          job-path: ${{ env.TEST_DIR }}/testflinger.yaml
+#      - name: Run testflinger job
+#        uses: canonical/testflinger/.github/actions/submit@main
+#        with:
+#          poll: true
+#          job-path: ${{ env.TEST_DIR }}/testflinger.yaml
