@@ -1,4 +1,4 @@
-name: Test chat
+name: deepseek-r1 intel-cpu
 
 on:
   # Manual trigger
