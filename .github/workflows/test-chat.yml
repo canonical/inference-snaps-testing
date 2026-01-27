@@ -3,8 +3,8 @@ name: Test chat
 on:
   # Manual trigger
   workflow_dispatch:
-    inputs:
-      queue:
+    inputs: &workflow-inputs
+      job-queue:
         description: 'Testflinger queue'
         required: true
         type: string
@@ -16,7 +16,7 @@ on:
         description: 'Snap name'
         required: true
         type: string
-      channel:
+      snap-channel:
         description: 'Snap store channel'
         required: true
         type: string
@@ -38,6 +38,9 @@ on:
         required: false
         type: string
 
+  workflow_call:
+    inputs: *workflow-inputs
+
 jobs:
   test:
     name: Test
@@ -52,12 +55,11 @@ jobs:
         run: |
           echo ::notice::\
           Snap: ${{ inputs.snap-name }}, \
-          Channel: ${{ inputs.channel }}, \
-          Test: ${{ inputs.test-name }}, \
-          Queue: ${{ inputs.queue }}, \
+          Channel: ${{ inputs.snap-channel }}, \
+          Queue: ${{ inputs.job-queue }}, \
           Select engine: ${{ inputs.select-engine }}, \
           Expect engine: ${{ inputs.expected-engine }}, \
-          Expect TPS: ${{ matrix.jobs.expected-tps }}, \
+          Expect TPS: ${{ inputs.expected-tps }}, \
           Install NVIDIA driver: ${{ inputs.install-nvidia-driver-version }}
 
       - name: Checkout code
@@ -66,8 +68,8 @@ jobs:
       - name: Add configuration to job
         env:
           SNAP_NAME: ${{ inputs.snap-name }}
-          SNAP_CHANNEL: ${{ inputs.channel }}
-          JOB_QUEUE: ${{ inputs.queue }}
+          SNAP_CHANNEL: ${{ inputs.snap-channel }}
+          JOB_QUEUE: ${{ inputs.job-queue }}
           EXPECTED_ENGINE: ${{ inputs.expected-engine }}
           EXPECTED_TPS: ${{ inputs.expected-tps }}
           INSTALL_NVIDIA_DRIVER_VERSION: ${{ inputs.nvidia-driver-version }}

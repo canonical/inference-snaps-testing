@@ -1,0 +1,23 @@
+name: Test chat
+
+on:
+  # Manual trigger
+  workflow_dispatch:
+    inputs:
+      snap-channel:
+        description: 'Snap store channel to test'
+        required: true
+        type: string
+
+jobs:
+  test-chat:
+    uses: ./.github/workflows/test-chat.yml
+    with:
+      snap-name: deepseek-r1
+      snap-channel: ${{ inputs.channel }}
+      job-queue: maas-systemtests-amd64
+      provision-data: "distro: noble"
+      expected-engine: ""
+      select-engine: "cpu"
+      expected-tps: 0
+      install-nvidia-driver-version: ""
