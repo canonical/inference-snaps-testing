@@ -22,14 +22,14 @@ func TestSubmitCancelJob(t *testing.T) {
 
 	job.JobQueue = "maas-systemtests-amd64"
 
-	//var provisionData Job_ProvisionData
-	//err = provisionData.FromProvisionData(map[string]interface{}{
-	//	"distro": "noble",
-	//})
-	//if err != nil {
-	//	t.Fatalf("Failed to set provision data: %v", err)
-	//}
-	//job.ProvisionData = &provisionData
+	var provisionData Job_ProvisionData
+	err = provisionData.FromProvisionData(map[string]interface{}{
+		"distro": "noble",
+	})
+	if err != nil {
+		t.Fatalf("Failed to set provision data: %v", err)
+	}
+	job.ProvisionData = &provisionData
 
 	testCommands := "hostname\n"
 	var testData TestData

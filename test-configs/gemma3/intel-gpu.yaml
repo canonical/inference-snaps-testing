@@ -1,0 +1,11 @@
+job-queue: 202504-36635
+
+provision-data:
+  distro: noble
+
+snap-name: gemma3
+snap-channel: latest/stable
+expected-engine:
+select-engine: cpu-xsmall
+expected-tps: 1
+install-nvidia-driver-version:

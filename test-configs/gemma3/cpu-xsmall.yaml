@@ -1,0 +1,12 @@
+#job-queue: maas-systemtests-amd64
+job-queue: 202409-35462 # lumalee
+
+provision-data:
+  distro: noble
+
+snap-name: gemma3
+snap-channel: latest/stable
+expected-engine:
+select-engine: cpu-xsmall
+expected-tps: 1
+install-nvidia-driver-version:

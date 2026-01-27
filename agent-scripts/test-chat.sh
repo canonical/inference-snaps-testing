@@ -8,7 +8,8 @@ curl -Ls -o install_tools.sh https://raw.githubusercontent.com/canonical/hwcert-
 # install the scriptlets and other tools on the agent and the device, as necessary
 export TOOLS_PATH=tools
 source install_tools.sh $TOOLS_PATH
-[ ! "$?" -eq 0 ] && echo "::error::Failed to run tools installer" && exit 1
+exit_code=$?
+[ $exit_code -ne 0 ] && echo "::error::Failed to run tools installer (exit code: $exit_code)" && exit 1
 echo "::endgroup::"
 
 echo "::group::Installing agent dependencies"
@@ -21,6 +22,7 @@ echo "::group::Target machine"
 wait_for_ssh --allow-degraded || exit 1
 # Store machine hostname for logging
 dut_hostname=$(_run hostname)
+[ -z "$dut_hostname" ] && echo "::error::Failed to get hostname of target machine" && exit 1
 echo "Test machine: $dut_hostname"
 echo "::endgroup::"
 
@@ -36,7 +38,7 @@ wait_for_snap_changes
 echo "::endgroup::"
 
 echo "::group::Installing device dependencies"
-_run sudo apt-get install --yes git
+_run sudo apt-get install --yes git jq
 _run sudo snap install go --classic --no-wait
 echo "::endgroup::"
 
@@ -87,6 +89,10 @@ if [[ -n "${SELECT_ENGINE}" ]]; then
 
   # Set expected engine to the selected one
   EXPECTED_ENGINE=$SELECT_ENGINE
+
+  # Restart server for changes to take effect
+  _run sudo snap restart "$SNAP_NAME".server
+
   echo "::endgroup::"
 fi
 
