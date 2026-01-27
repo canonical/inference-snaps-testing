@@ -53,8 +53,8 @@ jobs:
       - name: Show configuration
         run: |
           echo ::notice::\
-          Snap: ${{ inputs.snap-name }}, \
-          Channel: ${{ inputs.snap-channel }}, \
+          Snap Name: ${{ inputs.snap-name }}, \
+          Snap Channel: ${{ inputs.snap-channel }}, \
           Queue: ${{ inputs.job-queue }}, \
           Select engine: ${{ inputs.select-engine }}, \
           Expect engine: ${{ inputs.expected-engine }}, \
