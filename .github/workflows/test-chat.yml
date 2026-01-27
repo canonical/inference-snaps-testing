@@ -9,7 +9,7 @@ on:
         required: true
         type: string
       provision-data:
-        description: 'Testflinger provision data in yaml format'
+        description: 'Testflinger provision data as a single line of yaml or json'
         required: false
         type: string
       snap-name:
@@ -84,7 +84,10 @@ jobs:
         env:
           PROVISION_DATA: ${{ inputs.provision-data }}
         run: |
-          yq eval ".provision_data = strenv(PROVISION_DATA)" -i ${{ env.TEST_DIR }}/testflinger.yaml
+          yq eval '
+          .provision_data = (strenv(PROVISION_DATA) | from_yaml) |
+          .provision_data style=""
+          ' -i ${{ env.TEST_DIR }}/testflinger.yaml
 
       - name: Print testflinger job
         run: |
