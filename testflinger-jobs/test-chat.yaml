@@ -26,8 +26,8 @@ test_data:
       export SELECT_ENGINE=$SELECT_ENGINE
     echo "::endgroup::"
 
-    ./attachments/test/agent-scripts/setup-agent.sh
-    ./attachments/test/agent-scripts/setup-dut.sh
+    source ./attachments/test/agent-scripts/setup-agent.sh
+    source ./attachments/test/agent-scripts/setup-dut.sh
     ./attachments/test/agent-scripts/install-snap.sh
     ./attachments/test/agent-scripts/engine-selection.sh
     ./attachments/test/agent-scripts/test-chat.sh
