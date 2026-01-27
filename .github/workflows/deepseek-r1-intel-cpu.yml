@@ -15,7 +15,7 @@ jobs:
     with:
       snap-name: deepseek-r1
       snap-channel: ${{ inputs.channel }}
-      job-queue: 202409-35842 # ProLiant DL360 Gen9 with Intel(R) Xeon(R) CPU E5-2690 v3 @ 2.60GHz
+      job-queue: mir-intel-noble
       provision-data: "distro: noble"
       expected-engine: ""
       select-engine: "intel-cpu"
