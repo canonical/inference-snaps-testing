@@ -37,6 +37,10 @@ on:
         description: 'NVIDIA driver version to install (if applicable)'
         required: false
         type: string
+      install-intel-npu-driver:
+        description: 'Install the Intel NPU driver snap'
+        default: false
+        type: boolean
 
   workflow_call:
     inputs: *workflow-inputs
@@ -60,6 +64,7 @@ jobs:
           Expect engine: ${{ inputs.expected-engine }}, \
           Expect TPS: ${{ inputs.expected-tps }}, \
           Install NVIDIA driver: ${{ inputs.install-nvidia-driver-version }}
+          Install Intel NPU driver: ${{ inputs.install-intel-npu-driver }}
 
       - name: Checkout code
         uses: actions/checkout@v6
@@ -69,10 +74,11 @@ jobs:
           SNAP_NAME: ${{ inputs.snap-name }}
           SNAP_CHANNEL: ${{ inputs.snap-channel }}
           JOB_QUEUE: ${{ inputs.job-queue }}
+          SELECT_ENGINE: ${{ inputs.select-engine }}
           EXPECTED_ENGINE: ${{ inputs.expected-engine }}
           EXPECTED_TPS: ${{ inputs.expected-tps }}
           INSTALL_NVIDIA_DRIVER_VERSION: ${{ inputs.nvidia-driver-version }}
-          SELECT_ENGINE: ${{ inputs.select-engine }}
+          INSTALL_INTEL_NPU_DRIVER: ${{ inputs.install-intel-npu-driver }}
 
         run: |
           envsubst \
