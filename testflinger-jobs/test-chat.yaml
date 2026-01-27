@@ -6,8 +6,8 @@ provision_data:
 test_data:
   # Copy test scripts to the Testflinger Agent
   attachments:
-    - local: "agent.sh"
-      agent: "agent.sh"
+    - local: "../agent-scripts"
+      agent: "agent-scripts"
 
   # Run commands on the Testflinger Agent
   test_cmds: |
@@ -21,4 +21,4 @@ test_data:
     export INSTALL_NVIDIA_DRIVER_VERSION=$INSTALL_NVIDIA_DRIVER_VERSION
     export SELECT_ENGINE=$SELECT_ENGINE
 
-    exec attachments/test/agent.sh
+    exec attachments/test/agent-scripts/test-chat.sh

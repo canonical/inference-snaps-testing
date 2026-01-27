@@ -45,7 +45,7 @@ jobs:
     runs-on: self-hosted-linux-amd64-jammy-private-endpoint-medium
 
     env:
-      TEST_DIR: test-chat
+      JOB_FILE: testflinger-jobs/test-chat.yaml
 
     steps:
       - name: Show configuration
@@ -63,7 +63,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v6
 
-      - name: Add config to testflinger job
+      - name: Add configuration to job
         env:
           SNAP_NAME: ${{ inputs.snap-name }}
           SNAP_CHANNEL: ${{ inputs.channel }}
@@ -75,11 +75,11 @@ jobs:
 
         run: |
           envsubst \
-            < $TEST_DIR/testflinger.yaml \
-            > $TEST_DIR/testflinger.temp.yaml
-          mv $TEST_DIR/testflinger.temp.yaml $TEST_DIR/testflinger.yaml
+            < ${{ env.JOB_FILE }} \
+            > ${{ env.JOB_FILE }}.temp
+          mv ${{ env.JOB_FILE }}.temp ${{ env.JOB_FILE }}
 
-      - name: Add provision data
+      - name: Add provision data to job
         if: inputs.provision-data != ''
         env:
           PROVISION_DATA: ${{ inputs.provision-data }}
@@ -87,14 +87,14 @@ jobs:
           yq eval '
           .provision_data = (strenv(PROVISION_DATA) | from_yaml) |
           .provision_data style=""
-          ' -i ${{ env.TEST_DIR }}/testflinger.yaml
+          ' -i ${{ env.JOB_FILE }}
 
       - name: Print testflinger job
         run: |
-          cat ${{ env.TEST_DIR }}/testflinger.yaml
+          cat ${{ env.JOB_FILE }}
 
-#      - name: Run testflinger job
-#        uses: canonical/testflinger/.github/actions/submit@main
-#        with:
-#          poll: true
-#          job-path: ${{ env.TEST_DIR }}/testflinger.yaml
+      - name: Run testflinger job
+        uses: canonical/testflinger/.github/actions/submit@main
+        with:
+          poll: true
+          job-path: ${{ env.JOB_FILE }}
