@@ -12,6 +12,7 @@ on:
 jobs:
   test-chat:
     uses: ./.github/workflows/test-chat.yml
+    secrets: inherit
     with:
       snap-name: deepseek-r1
       snap-channel: ${{ inputs.snap-channel }}

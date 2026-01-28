@@ -62,6 +62,7 @@ jobs:
             expected-tps: 9 # Samples: 15.97, 9.93
 
     uses: ./.github/workflows/test-chat.yml
+    secrets: inherit
     with:
       snap-name: deepseek-r1
       snap-channel: ${{ inputs.snap-channel }}
