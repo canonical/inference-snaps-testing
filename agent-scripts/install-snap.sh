@@ -13,4 +13,7 @@ wait_for_snap_changes
 echo "Installing $SNAP_NAME from $SNAP_CHANNEL"
 _run sudo snap install "$SNAP_NAME" --channel "$SNAP_CHANNEL" --no-wait
 wait_for_snap_changes
+# We've run into an issue where we get here, but the snap command is not yet available. It's likely a race condition
+# where there are no changes remaining, but snapd is finishing up. Adding a sleep here to mitigate the issue.
+sleep 10
 echo "::endgroup::"
