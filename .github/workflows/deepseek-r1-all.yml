@@ -11,9 +11,10 @@ on:
 
 jobs:
   test-chat:
+    name: ${{ matrix.select-engine }}
     strategy:
       matrix:
-        include:
+        jobs:
           - select-engine: cpu
             job-queue: maas-systemtests-amd64
             provision-data: "distro: noble"
@@ -22,11 +23,11 @@ jobs:
             job-queue: mir-intel-noble
             provision-data: "distro: noble"
 
-          - engine: intel-gpu
+          - select-engine: intel-gpu
             job-queue: 202111-29603 # Alder Lake, GPU 8086:4680
             provision-data: "distro: noble"
 
-          - engine: intel-npu
+          - select-engine: intel-npu
             job-queue: hp-prodesk-4-sff-g1i-desktop-ai-pc-ag8j7av-c36704
             provision-data: "url: https://tel-image-cache.canonical.com/oem-share/sutton/releases/noble/oem-24.04c/20251009-80/sutton-noble-oem-24.04c-20251009-80.iso"
             install-intel-npu-driver: true
