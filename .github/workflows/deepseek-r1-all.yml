@@ -13,6 +13,7 @@ jobs:
   test-chat:
     name: deepseek-r1 ${{ matrix.jobs.select-engine }}
     strategy:
+      fail-fast: false
       matrix:
         jobs:
           - select-engine: cpu
