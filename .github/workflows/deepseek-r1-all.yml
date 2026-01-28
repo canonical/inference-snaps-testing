@@ -1,0 +1,42 @@
+name: deepseek-r1 all
+
+on:
+  # Manual trigger
+  workflow_dispatch:
+    inputs:
+      snap-channel:
+        description: 'Snap store channel to test'
+        required: true
+        type: string
+
+jobs:
+  test-chat:
+    strategy:
+      matrix:
+        include:
+          - select-engine: cpu
+            job-queue: maas-systemtests-amd64
+            provision-data: "distro: noble"
+
+          - select-engine: intel-cpu
+            job-queue: mir-intel-noble
+            provision-data: "distro: noble"
+
+          - engine: intel-gpu
+            job-queue: 202111-29603 # Alder Lake, GPU 8086:4680
+            provision-data: "distro: noble"
+
+          - engine: intel-npu
+            job-queue: hp-prodesk-4-sff-g1i-desktop-ai-pc-ag8j7av-c36704
+            provision-data: "url: https://tel-image-cache.canonical.com/oem-share/sutton/releases/noble/oem-24.04c/20251009-80/sutton-noble-oem-24.04c-20251009-80.iso"
+            install-intel-npu-driver: true
+
+    uses: ./.github/workflows/test-chat.yml
+    with:
+      snap-name: deepseek-r1
+      snap-channel: ${{ inputs.snap-channel }}
+      job-queue: ${{ matrix.job-queue }}
+      provision-data: ${{ matrix.provision-data }}
+      select-engine: ${{ matrix.select-engine }}
+      install-nvidia-driver-version: ${{ matrix.install-nvidia-driver-version }}
+      install-intel-npu-driver: ${{ matrix.install-intel-npu-driver }}
