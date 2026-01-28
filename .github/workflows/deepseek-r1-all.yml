@@ -70,4 +70,4 @@ jobs:
       provision-data: ${{ matrix.jobs.provision-data }}
       select-engine: ${{ matrix.jobs.select-engine }}
       install-nvidia-driver-version: ${{ matrix.jobs.install-nvidia-driver-version }}
-      install-intel-npu-driver: ${{ matrix.jobs.install-intel-npu-driver == 'true' }}
+      install-intel-npu-driver: ${{ matrix.jobs.install-intel-npu-driver == true }}
