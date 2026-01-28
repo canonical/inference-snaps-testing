@@ -27,12 +27,14 @@ test_data:
       export INSTALL_INTEL_NPU_DRIVER=$INSTALL_INTEL_NPU_DRIVER
     echo "::endgroup::"
 
+    # For consistency we source all the sub-scripts
+    # Some of them export env vars we need later during the test
     source ./attachments/test/agent-scripts/setup-agent.sh
     source ./attachments/test/agent-scripts/setup-dut.sh
-    ./attachments/test/agent-scripts/install-nvidia-driver.sh
-    ./attachments/test/agent-scripts/install-intel-npu-driver.sh
-    ./attachments/test/agent-scripts/install-snap.sh
-    ./attachments/test/agent-scripts/engine-selection.sh
-    ./attachments/test/agent-scripts/test-chat.sh
+    source ./attachments/test/agent-scripts/install-nvidia-driver.sh
+    source ./attachments/test/agent-scripts/install-intel-npu-driver.sh
+    source ./attachments/test/agent-scripts/install-snap.sh
+    source ./attachments/test/agent-scripts/engine-selection.sh
+    source ./attachments/test/agent-scripts/test-chat.sh
     
     echo "::group::Testflinger cleanup"
