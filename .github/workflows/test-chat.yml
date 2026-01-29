@@ -48,7 +48,7 @@ on:
 jobs:
   test-chat:
     # Need to use self-hosted private endpoint runner to access Testflinger
-    runs-on: self-hosted-linux-amd64-jammy-private-endpoint-medium
+    runs-on: self-hosted-linux-amd64-noble-private-endpoint-medium
 
     env:
       JOB_FILE: testflinger-jobs/test-chat.yaml
