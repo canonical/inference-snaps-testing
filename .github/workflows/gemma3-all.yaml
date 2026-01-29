@@ -1,4 +1,4 @@
-name: nemotron-3-nano all
+name: gemma3 all
 
 on:
   # Manual trigger
@@ -11,7 +11,7 @@ on:
 
 jobs:
   test-chat:
-    name: nemotron-3-nano ${{ matrix.jobs.select-engine }}
+    name: gemma3 ${{ matrix.jobs.select-engine }}
     strategy:
       fail-fast: false
       matrix:
@@ -20,16 +20,30 @@ jobs:
             job-queue: maas-systemtests-amd64
             provision-data: "distro: noble"
 
-          - select-engine: nvidia-gpu
+          - select-engine: cpu-xsmall
+            job-queue: maas-systemtests-amd64
+            provision-data: "distro: noble"
+
+          - select-engine: intel-cpu
+            job-queue: mir-intel-noble
+            provision-data: "distro: noble"
+
+          - select-engine: intel-gpu
+            job-queue: 202111-29603 # Alder Lake, GPU 8086:4680
+            provision-data: "distro: noble"
+
+          - select-engine: nvidia-gpu-amd64
             job-queue: anbox-nvidia-amd64
             provision-data: "distro: noble"
             expected-tps: 10
             install-nvidia-driver-version: 550
 
-    uses: ./.github/workflows/test-chat.yml
+          # Skip nvidia-gpu-arm64 engine as we do not have a test machine for it
+
+    uses: ./.github/workflows/test-chat.yaml
     secrets: inherit
     with:
-      snap-name: nemotron-3-nano
+      snap-name: gemma3
       snap-channel: ${{ inputs.snap-channel }}
       job-queue: ${{ matrix.jobs.job-queue }}
       provision-data: ${{ matrix.jobs.provision-data }}

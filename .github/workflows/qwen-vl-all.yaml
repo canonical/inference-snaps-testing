@@ -55,7 +55,7 @@ jobs:
             provision-data: "distro: noble"
             expected-tps: 9
 
-    uses: ./.github/workflows/test-chat.yml
+    uses: ./.github/workflows/test-chat.yaml
     secrets: inherit
     with:
       snap-name: deepseek-r1
