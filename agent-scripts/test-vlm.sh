@@ -1,5 +1,24 @@
 #!/bin/bash -eu
 
+#if [ -z "${CI:-}" ]; then
+#  _run() {
+#    ssh olga.local "$@"
+#  }
+#
+#  _put() {
+#    PREFIX="olga.local"
+#
+#    TARGET=${@: -1}
+#    [[ "${TARGET:0:1}" != ":" ]] && TARGET=":${TARGET}"
+#    TARGET=${PREFIX}${TARGET}
+#
+#    # Extract the sources (remove the target) from the argument list
+#    SOURCES_ARRAY=("${@:1:$#-1}")
+#    SOURCES="${SOURCES_ARRAY[@]}"
+#    scp $SOURCES $TARGET
+#  }
+#fi
+
 echo "::group::Getting model name"
 
 status_json=$(_run "$SNAP_NAME" status --format=json)
@@ -47,12 +66,23 @@ payload="{
   \"max_tokens\": 300
 }"
 
-# Minify the json payload to make it a single line
-# The _run command has issues with line breaks
-payload=$(echo "$payload" | jq -c .)
+# The _run macro has issues handling quotes and newlines. To work around this we add the
+# curl command and its parameters to a script, upload the script to the DUT, and then execute
+# this script with the _run command.
+echo "#!/bin/bash -eux" > dut-script.sh
+echo "curl $api_url/chat/completions -H 'Content-Type: application/json' -d '$payload'" >> dut-script.sh
+chmod +x dut-script.sh
+_put dut-script.sh :
 
-response=$(_run curl "$api_url"/chat/completions -H "Content-Type: application/json" -d "$payload")
+response=$(_run ./dut-script.sh)
 echo "Response: $response"
+
+# Validate response is valid JSON
+if ! echo "$response" | jq empty 2>/dev/null; then
+  echo "::error::Response is not valid JSON: $response"
+  exit 1
+fi
+
 response_content=$(echo "$response" | jq -r .choices[0].message.content)
 
 if [ -z ${#response_content} ]; then
@@ -66,5 +96,7 @@ if [[ "${response_content,,}" != *circle* ]]; then
   echo "$response"
   exit 1
 fi
+
+echo "Received expected response"
 
 echo "::endgroup::"
