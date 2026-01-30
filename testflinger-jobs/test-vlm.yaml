@@ -1,5 +1,8 @@
 job_queue: $JOB_QUEUE
 
+provision_data:
+  distro: noble
+
 test_data:
   # Copy test scripts to the Testflinger Agent
   attachments:
