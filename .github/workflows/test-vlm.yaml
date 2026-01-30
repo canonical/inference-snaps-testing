@@ -1,0 +1,109 @@
+name: Test VLM
+
+on:
+  # Manual trigger
+  workflow_dispatch:
+    inputs: &workflow-inputs
+      job-queue:
+        description: 'Testflinger queue'
+        required: true
+        type: string
+      provision-data:
+        description: 'Testflinger provision data as a single line of yaml or json'
+        required: false
+        type: string
+      snap-name:
+        description: 'Snap name'
+        required: true
+        type: string
+      snap-channel:
+        description: 'Snap store channel'
+        required: true
+        type: string
+      expected-engine:
+        description: 'Engine expected to be used'
+        required: false
+        type: string
+      select-engine:
+        description: 'Engine to explicitly select'
+        required: false
+        type: string
+      expected-tps:
+        description: 'Expected inference speed'
+        required: false
+        type: string
+        default: "0"
+      install-nvidia-driver-version:
+        description: 'NVIDIA driver version to install (if applicable)'
+        required: false
+        type: string
+      install-intel-npu-driver:
+        description: 'Install the Intel NPU driver snap'
+        default: false
+        type: boolean
+
+  workflow_call:
+    inputs: *workflow-inputs
+
+jobs:
+  test-vlm:
+    # Need to use self-hosted private endpoint runner to access Testflinger
+    runs-on: self-hosted-linux-amd64-noble-private-endpoint-medium
+
+    env:
+      JOB_FILE: testflinger-jobs/test-vlm.yaml
+
+    steps:
+      - name: Show configuration
+        run: |
+          echo ::notice::\
+          Snap Name: ${{ inputs.snap-name }}, \
+          Snap Channel: ${{ inputs.snap-channel }}, \
+          Queue: ${{ inputs.job-queue }}, \
+          Select engine: ${{ inputs.select-engine }}, \
+          Expect engine: ${{ inputs.expected-engine }}, \
+          Expect TPS: ${{ inputs.expected-tps }}, \
+          Install NVIDIA driver: ${{ inputs.install-nvidia-driver-version }}, \
+          Install Intel NPU driver: ${{ inputs.install-intel-npu-driver }}, \
+
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Add configuration to job
+        env:
+          SNAP_NAME: ${{ inputs.snap-name }}
+          SNAP_CHANNEL: ${{ inputs.snap-channel }}
+          JOB_QUEUE: ${{ inputs.job-queue }}
+          SELECT_ENGINE: ${{ inputs.select-engine }}
+          EXPECTED_ENGINE: ${{ inputs.expected-engine }}
+          EXPECTED_TPS: ${{ inputs.expected-tps }}
+          INSTALL_NVIDIA_DRIVER_VERSION: ${{ inputs.nvidia-driver-version }}
+          INSTALL_INTEL_NPU_DRIVER: ${{ inputs.install-intel-npu-driver }}
+
+        run: |
+          envsubst \
+            < ${{ env.JOB_FILE }} \
+            > ${{ env.JOB_FILE }}.temp
+          mv ${{ env.JOB_FILE }}.temp ${{ env.JOB_FILE }}
+
+      - name: Add provision data to job
+        if: inputs.provision-data != ''
+        env:
+          PROVISION_DATA: ${{ inputs.provision-data }}
+        run: |
+          yq eval '
+          .provision_data = (strenv(PROVISION_DATA) | from_yaml) |
+          .provision_data style=""
+          ' -i ${{ env.JOB_FILE }}
+
+      - name: Print testflinger job
+        run: |
+          cat ${{ env.JOB_FILE }}
+
+      - name: Run testflinger job
+        uses: canonical/testflinger/.github/actions/submit@main
+        with:
+          poll: true
+          job-path: ${{ env.JOB_FILE }}
+          client-id: ${{ vars.TESTFLINGER_CLIENT_ID }}
+          secret-key: ${{ secrets.TESTFLINGER_SECRET_KEY }}
