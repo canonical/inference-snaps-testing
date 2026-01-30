@@ -1,13 +1,5 @@
 #!/bin/bash -eu
 
-# If not running in CI, override the _run function to allow manual testing
-if [ -z "${CI:-}" ]; then
-  _run() {
-    "$@"
-  }
-fi
-
-
 echo "::group::Getting model name"
 
 status_json=$(_run "$SNAP_NAME" status --format=json)
