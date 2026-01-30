@@ -1,0 +1,40 @@
+job_queue: $JOB_QUEUE
+
+provision_data:
+  distro: noble
+
+test_data:
+  # Copy test scripts to the Testflinger Agent
+  attachments:
+    - local: "../agent-scripts"
+      agent: "agent-scripts"
+
+  # Run commands on the Testflinger Agent
+  test_cmds: |
+    #!/bin/bash -eu
+
+    # The outer testflinger action uses groups for logging. Close its existing one, so we can use our own.
+    echo "::endgroup::"
+    
+    echo "::group::Setting configuration variables"
+      # These vars are replaced by envsubst in the caller.
+      export SNAP_NAME=$SNAP_NAME
+      export SNAP_CHANNEL=$SNAP_CHANNEL
+      export SELECT_ENGINE=$SELECT_ENGINE
+      export EXPECTED_ENGINE=$EXPECTED_ENGINE
+      export EXPECTED_TPS=$EXPECTED_TPS
+      export INSTALL_NVIDIA_DRIVER_VERSION=$INSTALL_NVIDIA_DRIVER_VERSION
+      export INSTALL_INTEL_NPU_DRIVER=$INSTALL_INTEL_NPU_DRIVER
+    echo "::endgroup::"
+
+    # For consistency we source all the sub-scripts
+    # Some of them export env vars we need later during the test
+    source ./attachments/test/agent-scripts/setup-agent.sh
+    source ./attachments/test/agent-scripts/setup-dut.sh
+    source ./attachments/test/agent-scripts/install-nvidia-driver.sh
+    source ./attachments/test/agent-scripts/install-intel-npu-driver.sh
+    source ./attachments/test/agent-scripts/install-snap.sh
+    source ./attachments/test/agent-scripts/engine-selection.sh
+    source ./attachments/test/agent-scripts/test-chat.sh
+    
+    echo "::group::Testflinger cleanup"
