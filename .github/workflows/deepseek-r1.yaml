@@ -1,4 +1,4 @@
-name: qwen-vl all
+name: deepseek-r1
 
 on:
   # Manual trigger
@@ -11,7 +11,7 @@ on:
 
 jobs:
   test-chat:
-    name: qwen-vl ${{ matrix.jobs.select-engine }}
+    name: deepseek-r1 ${{ matrix.jobs.select-engine }}
     strategy:
       fail-fast: false
       matrix:
@@ -21,6 +21,10 @@ jobs:
             provision-data: "distro: noble"
 
           - select-engine: cpu-avx512
+            job-queue: maas-systemtests-amd64
+            provision-data: "distro: noble"
+
+          - select-engine: cpu-legacy
             job-queue: maas-systemtests-amd64
             provision-data: "distro: noble"
 
@@ -36,24 +40,26 @@ jobs:
             job-queue: 202111-29603 # Alder Lake, GPU 8086:4680
             provision-data: "distro: noble"
 
-          # Skip intel-npu engine as it requires an image input
-          # See https://github.com/canonical/inference-snaps/issues/96
+          - select-engine: intel-npu
+            job-queue: hp-prodesk-4-sff-g1i-desktop-ai-pc-ag8j7av-c36704
+            provision-data: "url: https://tel-image-cache.canonical.com/oem-share/sutton/releases/noble/oem-24.04c/20251009-80/sutton-noble-oem-24.04c-20251009-80.iso"
+            install-intel-npu-driver: true
 
           - select-engine: cuda
             job-queue: anbox-nvidia-amd64
             provision-data: "distro: noble"
-            expected-tps: 10
+            expected-tps: 10 # Samples: 32.6
             install-nvidia-driver-version: 550
 
           - select-engine: ampere-altra
             job-queue: ampere-altra
             provision-data: "distro: noble"
-            expected-tps: 9
+            expected-tps: 9 # Samples: 10.39
 
           - select-engine: ampere-one
             job-queue: ampere-one
             provision-data: "distro: noble"
-            expected-tps: 9
+            expected-tps: 9 # Samples: 15.97, 9.93
 
     uses: ./.github/workflows/test-chat.yaml
     secrets: inherit
