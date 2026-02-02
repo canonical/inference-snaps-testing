@@ -1,0 +1,32 @@
+name: qwen-vl chat
+
+on:
+  # Manual trigger
+  workflow_dispatch:
+    inputs:
+      snap-channel:
+        description: 'Snap store channel to test'
+        required: true
+        type: string
+
+jobs:
+  test-chat:
+    name: qwen-vl ${{ matrix.jobs.select-engine }}
+    strategy:
+      fail-fast: false
+      matrix:
+        jobs:
+          - select-engine: cpu-tiny
+            job-queue: maas-systemtests-amd64
+            provision-data: "distro: noble"
+
+    uses: ./.github/workflows/test-vlm.yaml
+    secrets: inherit
+    with:
+      snap-name: qwen-vl
+      snap-channel: ${{ inputs.snap-channel }}
+      job-queue: ${{ matrix.jobs.job-queue }}
+      provision-data: ${{ matrix.jobs.provision-data }}
+      select-engine: ${{ matrix.jobs.select-engine }}
+      install-nvidia-driver-version: ${{ matrix.jobs.install-nvidia-driver-version }}
+      install-intel-npu-driver: ${{ matrix.jobs.install-intel-npu-driver == true }}
