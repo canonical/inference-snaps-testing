@@ -20,7 +20,7 @@ jobs:
             job-queue: maas-systemtests-amd64
             provision-data: "distro: noble"
 
-    uses: ./.github/workflows/test-vlm.yaml
+    uses: ./.github/workflows/test-chat.yaml
     secrets: inherit
     with:
       snap-name: qwen-vl
