@@ -46,9 +46,16 @@ if [ $exit_code -ne 0 ]; then
   exit 1
 fi
 
-model_name=$(echo "$models_result" | jq -r .data[0].id)
+set +e
+model_name=$(echo "$models_result" | jq -r '.data[0].id | if . == null then error("id field not set") else . end')
+exit_code=$?
+set -e
+
 echo "Model name: $model_name"
-if [ -z "$model_name" ]; then
+
+if [ $exit_code -ne 0 ] || [ -z "$model_name" ]; then
+  echo "Get logs"
+  _run sudo snap logs "$SNAP_NAME" -n 300
   echo "::error::Failed to look up model name: $models_result"
   echo "::endgroup::"
   exit 1
