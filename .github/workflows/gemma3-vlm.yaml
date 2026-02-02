@@ -1,4 +1,4 @@
-name: gemma3
+name: gemma3 vlm
 
 on:
   # Manual trigger
@@ -20,9 +20,7 @@ jobs:
             job-queue: maas-systemtests-amd64
             provision-data: "distro: noble"
 
-          - select-engine: cpu-xsmall
-            job-queue: maas-systemtests-amd64
-            provision-data: "distro: noble"
+          # cpu-xsmall engine does not support image input
 
           - select-engine: intel-cpu
             job-queue: mir-intel-noble
