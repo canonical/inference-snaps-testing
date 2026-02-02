@@ -21,7 +21,7 @@ jobs:
             provision-data: "distro: noble"
 
           - select-engine: cpu-avx512
-            job-queue: maas-systemtests-amd64
+            job-queue: 202409-35502
             provision-data: "distro: noble"
 
           # cpu-tiny does not support image input
