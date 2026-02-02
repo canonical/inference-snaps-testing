@@ -29,6 +29,7 @@ until _run $SNAP_NAME status; do
     echo "Get logs"
     _run sudo journalctl -a | grep "$SNAP_NAME"
     echo "::error::Machine: $dut_hostname, snap still not available after $((max_retries * 30)) seconds"
+    echo "::endgroup::"
     exit 1
   fi
   echo "✘ $SNAP_NAME status failed, retrying in ${retry_delay}s... ($retry_count/$max_retries)"
@@ -36,5 +37,3 @@ until _run $SNAP_NAME status; do
 done
 echo "✔ Snap status succeeded"
 echo "::endgroup::"
-
-

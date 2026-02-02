@@ -42,6 +42,7 @@ if [ $exit_code -ne 0 ]; then
   echo "Get logs"
   _run sudo snap logs "$SNAP_NAME" -n 300
   echo "::error::Failed to look up models: $models_result"
+  echo "::endgroup::"
   exit 1
 fi
 
@@ -49,6 +50,7 @@ model_name=$(echo "$models_result" | jq -r .data[0].id)
 echo "Model name: $model_name"
 if [ -z "$model_name" ]; then
   echo "::error::Failed to look up model name: $models_result"
+  echo "::endgroup::"
   exit 1
 fi
 
@@ -97,6 +99,7 @@ if [ $exit_code -ne 0 ]; then
   echo "Get logs"
   _run sudo snap logs "$SNAP_NAME" -n 300
   echo "::error::Failed to prompt model: $models_result"
+  echo "::endgroup::"
   exit 1
 fi
 
@@ -105,6 +108,7 @@ echo "Response: $response"
 # Validate response is valid JSON
 if ! echo "$response" | jq empty 2>/dev/null; then
   echo "::error::Response is not valid JSON: $response"
+  echo "::endgroup::"
   exit 1
 fi
 
@@ -112,6 +116,7 @@ response_content=$(echo "$response" | jq -r .choices[0].message.content)
 
 if [ -z ${#response_content} ]; then
   echo "::error::Response message empty: $response"
+  echo "::endgroup::"
   exit 1
 fi
 
@@ -119,6 +124,7 @@ fi
 if [[ "${response_content,,}" != *circle* ]]; then
   echo "::notice::Response does not contain the word 'circle' $response_content"
   echo "$response"
+  echo "::endgroup::"
   exit 1
 fi
 
