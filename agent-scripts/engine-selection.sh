@@ -20,7 +20,7 @@ if [[ -n "${SELECT_ENGINE}" ]]; then
     sleep $retry_delay
   done
   echo "✔ Selecting engine succeeded"
-  
+
   # Restart server after changing engine
   _run sudo snap restart "$SNAP_NAME"
   wait_for_snap_changes
