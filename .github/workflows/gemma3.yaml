@@ -40,7 +40,7 @@ jobs:
 
           # Skip nvidia-gpu-arm64 engine as we do not have a test machine for it
 
-    uses: ./.github/workflows/test-chat.yaml
+    uses: ./.github/workflows/test-vlm.yaml
     secrets: inherit
     with:
       snap-name: gemma3
