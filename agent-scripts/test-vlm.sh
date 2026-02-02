@@ -25,14 +25,28 @@ status_json=$(_run "$SNAP_NAME" status --format=json)
 api_url=$(echo "$status_json" | jq -r '.endpoints.openai')
 echo "API URL: $api_url"
 
-# TODO check to see if server is ready. For now we sleep a minute
+# TODO check to see if server is ready.
+# This can be difficult as the models endpoint can be ready, but inferencing not yet.
+# Simply prompting the model with text is also not possible, as some models require an image.
+# Perhaps we should fetch the models endpoint in a loop until success or timeout,
+# then we prompt the model with the image in a loop until success or timeout.
+# For now we sleep a minute.
 sleep 60
 
+set +e
 models_result=$(_run curl "$api_url"/models)
+exit_code=$?
+set -e
+
+if [ $exit_code -ne 0 ]; then
+  echo "Get logs"
+  _run sudo snap logs "$SNAP_NAME" -n 300
+  echo "::error::Failed to look up models: $models_result"
+  exit 1
+fi
+
 model_name=$(echo "$models_result" | jq -r .data[0].id)
-
 echo "Model name: $model_name"
-
 if [ -z "$model_name" ]; then
   echo "::error::Failed to look up model name: $models_result"
   exit 1
@@ -42,7 +56,7 @@ echo "::endgroup::"
 
 echo "::group::Prompting model"
 
-image_data=$(base64 < "$1" | tr -d '\n')
+image_data=$(base64 <"$1" | tr -d '\n')
 
 payload="{
   \"model\": \"$model_name\",
@@ -69,12 +83,23 @@ payload="{
 # The _run macro has issues handling quotes and newlines. To work around this we add the
 # curl command and its parameters to a script, upload the script to the DUT, and then execute
 # this script with the _run command.
-echo "#!/bin/bash -eux" > dut-script.sh
-echo "curl $api_url/chat/completions -H 'Content-Type: application/json' -d '$payload'" >> dut-script.sh
+echo "#!/bin/bash -eux" >dut-script.sh
+echo "curl $api_url/chat/completions -H 'Content-Type: application/json' -d '$payload'" >>dut-script.sh
 chmod +x dut-script.sh
 _put dut-script.sh :
 
+set +e
 response=$(_run ./dut-script.sh)
+exit_code=$?
+set -e
+
+if [ $exit_code -ne 0 ]; then
+  echo "Get logs"
+  _run sudo snap logs "$SNAP_NAME" -n 300
+  echo "::error::Failed to prompt model: $models_result"
+  exit 1
+fi
+
 echo "Response: $response"
 
 # Validate response is valid JSON
