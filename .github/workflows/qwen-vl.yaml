@@ -1,4 +1,4 @@
-name: qwen-vl vlm
+name: qwen-vl
 
 on:
   # Manual trigger
@@ -10,7 +10,7 @@ on:
         type: string
 
 jobs:
-  test-chat:
+  test-vlm:
     name: qwen-vl ${{ matrix.jobs.select-engine }}
     strategy:
       fail-fast: false
@@ -23,8 +23,6 @@ jobs:
           - select-engine: cpu-avx512
             job-queue: 202409-35502
             provision-data: "distro: noble"
-
-          # cpu-tiny does not support image input
 
           - select-engine: intel-cpu
             job-queue: mir-intel-noble
@@ -53,6 +51,29 @@ jobs:
             provision-data: "distro: noble"
 
     uses: ./.github/workflows/test-vlm.yaml
+    secrets: inherit
+    with:
+      snap-name: qwen-vl
+      snap-channel: ${{ inputs.snap-channel }}
+      job-queue: ${{ matrix.jobs.job-queue }}
+      provision-data: ${{ matrix.jobs.provision-data }}
+      select-engine: ${{ matrix.jobs.select-engine }}
+      install-nvidia-driver-version: ${{ matrix.jobs.install-nvidia-driver-version }}
+      install-intel-npu-driver: ${{ matrix.jobs.install-intel-npu-driver == true }}
+
+
+  test-chat:
+    name: qwen-vl ${{ matrix.jobs.select-engine }}
+    strategy:
+      fail-fast: false
+      matrix:
+        jobs:
+          # cpu-tiny does not support image input
+          - select-engine: cpu-tiny
+            job-queue: maas-systemtests-amd64
+            provision-data: "distro: noble"
+
+    uses: ./.github/workflows/test-chat.yaml
     secrets: inherit
     with:
       snap-name: qwen-vl
