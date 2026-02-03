@@ -3,6 +3,7 @@
 #if [ -z "${CI:-}" ]; then
 #  _run() {
 #    ssh olga.local "$@"
+##    "$@"
 #  }
 #
 #  _put() {
@@ -16,6 +17,7 @@
 #    SOURCES_ARRAY=("${@:1:$#-1}")
 #    SOURCES="${SOURCES_ARRAY[@]}"
 #    scp $SOURCES $TARGET
+##    sleep 1
 #  }
 #fi
 
@@ -25,41 +27,58 @@ status_json=$(_run "$SNAP_NAME" status --format=json)
 api_url=$(echo "$status_json" | jq -r '.endpoints.openai')
 echo "API URL: $api_url"
 
-# TODO check to see if server is ready.
-# This can be difficult as the models endpoint can be ready, but inferencing not yet.
-# Simply prompting the model with text is also not possible, as some models require an image.
-# Perhaps we should fetch the models endpoint in a loop until success or timeout,
-# then we prompt the model with the image in a loop until success or timeout.
-# For now we sleep a minute.
-sleep 60
+# Retry model lookup in a loop, as server might not be ready
+max_retries=20
+retry_delay=30
 
-set +e
-models_result=$(_run curl "$api_url"/models)
-exit_code=$?
-set -e
+retry_count=0
+success=false
 
-if [ $exit_code -ne 0 ]; then
-  echo "Get logs"
-  _run sudo snap logs "$SNAP_NAME" -n 300
-  echo "::error::Failed to look up models: $models_result"
-  echo "::endgroup::"
-  exit 1
-fi
+while [ $retry_count -lt $max_retries ] && [ "$success" = false ]; do
+  set +e
+  models_result=$(_run curl "$api_url"/models)
+  exit_code=$?
+  set -e
 
-set +e
-model_name=$(echo "$models_result" | jq -r '.data[0].id | if . == null then error("id field not set") else . end')
-exit_code=$?
-set -e
+  if [ $exit_code -ne 0 ]; then
+    echo "Failed to look up models (attempt $((retry_count + 1))/$max_retries)"
+    retry_count=$((retry_count + 1))
+    if [ $retry_count -lt $max_retries ]; then
+      sleep $retry_delay
+      continue
+    else
+      echo "Get logs"
+      _run sudo snap logs "$SNAP_NAME" -n 300
+      echo "::error::Failed to look up models: $models_result"
+      echo "::endgroup::"
+      exit 1
+    fi
+  fi
 
-echo "Model name: $model_name"
+  set +e
+  model_name=$(echo "$models_result" | jq -r '.data[0].id | if . == null then error("id field not set") else . end')
+  exit_code=$?
+  set -e
 
-if [ $exit_code -ne 0 ] || [ -z "$model_name" ]; then
-  echo "Get logs"
-  _run sudo snap logs "$SNAP_NAME" -n 300
-  echo "::error::Failed to look up model name: $models_result"
-  echo "::endgroup::"
-  exit 1
-fi
+  echo "Model name: $model_name"
+
+  if [ $exit_code -ne 0 ] || [ -z "$model_name" ]; then
+    echo "Failed to look up model name (attempt $((retry_count + 1))/$max_retries)"
+    retry_count=$((retry_count + 1))
+    if [ $retry_count -lt $max_retries ]; then
+      sleep $retry_delay
+      continue
+    else
+      echo "Get logs"
+      _run sudo snap logs "$SNAP_NAME" -n 300
+      echo "::error::Failed to look up model name: $models_result"
+      echo "::endgroup::"
+      exit 1
+    fi
+  fi
+
+  success=true
+done
 
 echo "::endgroup::"
 
@@ -97,35 +116,69 @@ echo "curl $api_url/chat/completions -H 'Content-Type: application/json' -d '$pa
 chmod +x dut-script.sh
 _put dut-script.sh :
 
-set +e
-response=$(_run ./dut-script.sh)
-exit_code=$?
-set -e
+# Retry prompting in a loop, as server might not be ready for inferencing
+retry_count=0
+success=false
 
-if [ $exit_code -ne 0 ]; then
-  echo "Get logs"
-  _run sudo snap logs "$SNAP_NAME" -n 300
-  echo "::error::Failed to prompt model: $models_result"
-  echo "::endgroup::"
-  exit 1
-fi
+while [ $retry_count -lt $max_retries ] && [ "$success" = false ]; do
 
-echo "Response: $response"
+  set +e
+  response=$(_run ./dut-script.sh)
+  exit_code=$?
+  set -e
 
-# Validate response is valid JSON
-if ! echo "$response" | jq empty 2>/dev/null; then
-  echo "::error::Response is not valid JSON: $response"
-  echo "::endgroup::"
-  exit 1
-fi
+  if [ $exit_code -ne 0 ]; then
+    echo "Failed to prompt model (attempt $((retry_count + 1))/$max_retries)"
+    retry_count=$((retry_count + 1))
+    if [ $retry_count -lt $max_retries ]; then
+      sleep $retry_delay
+      continue
+    else
+      echo "Get logs"
+      _run sudo snap logs "$SNAP_NAME" -n 300
+      echo "::error::Failed to prompt model: $models_result"
+      echo "::endgroup::"
+      exit 1
+    fi
+  fi
 
-response_content=$(echo "$response" | jq -r .choices[0].message.content)
+  echo "Response: $response"
 
-if [ -z ${#response_content} ]; then
-  echo "::error::Response message empty: $response"
-  echo "::endgroup::"
-  exit 1
-fi
+  # Validate response is valid JSON
+  if ! echo "$response" | jq empty 2>/dev/null; then
+    echo "Failed to validate response as JSON (attempt $((retry_count + 1))/$max_retries)"
+    retry_count=$((retry_count + 1))
+    if [ $retry_count -lt $max_retries ]; then
+      sleep $retry_delay
+      continue
+    else
+      echo "::error::Response is not valid JSON: $response"
+      echo "::endgroup::"
+      exit 1
+    fi
+  fi
+
+  set +e
+  response_content=$(echo "$response" | jq -r '.choices[0].message.content | if . == null then error("content field not set") else . end')
+  exit_code=$?
+  set -e
+
+  if [ $exit_code -ne 0 ] || [ -z ${#response_content} ]; then
+    echo "Failed to extract response content (attempt $((retry_count + 1))/$max_retries)"
+    retry_count=$((retry_count + 1))
+    if [ $retry_count -lt $max_retries ]; then
+      sleep $retry_delay
+      continue
+    else
+      echo "::error::Response message empty: $response"
+      echo "::endgroup::"
+      exit 1
+    fi
+  fi
+
+  # Prompting model was successful, but still need to validate the response
+  success=true
+done
 
 # Convert response to lower case and check if it contains the word "circle"
 if [[ "${response_content,,}" != *circle* ]]; then
@@ -135,6 +188,6 @@ if [[ "${response_content,,}" != *circle* ]]; then
   exit 1
 fi
 
-echo "Received expected response"
+echo "Response contains expected content"
 
 echo "::endgroup::"
