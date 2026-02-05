@@ -10,7 +10,7 @@ on:
         type: string
 
 jobs:
-  test-chat:
+  test-vlm:
     name: qwen-vl ${{ matrix.jobs.select-engine }}
     strategy:
       fail-fast: false
@@ -21,11 +21,7 @@ jobs:
             provision-data: "distro: noble"
 
           - select-engine: cpu-avx512
-            job-queue: maas-systemtests-amd64
-            provision-data: "distro: noble"
-
-          - select-engine: cpu-tiny
-            job-queue: maas-systemtests-amd64
+            job-queue: 202409-35502
             provision-data: "distro: noble"
 
           - select-engine: intel-cpu
@@ -36,29 +32,51 @@ jobs:
             job-queue: 202111-29603 # Alder Lake, GPU 8086:4680
             provision-data: "distro: noble"
 
-          # Skip intel-npu engine as it requires an image input
-          # See https://github.com/canonical/inference-snaps/issues/96
+          - select-engine: intel-npu
+            job-queue: hp-prodesk-4-sff-g1i-desktop-ai-pc-ag8j7av-c36704
+            provision-data: "url: https://tel-image-cache.canonical.com/oem-share/sutton/releases/noble/oem-24.04c/20251009-80/sutton-noble-oem-24.04c-20251009-80.iso"
+            install-intel-npu-driver: true
 
           - select-engine: cuda
             job-queue: anbox-nvidia-amd64
             provision-data: "distro: noble"
-            expected-tps: 10
             install-nvidia-driver-version: 550
 
           - select-engine: ampere-altra
             job-queue: ampere-altra
             provision-data: "distro: noble"
-            expected-tps: 9
 
           - select-engine: ampere-one
             job-queue: ampere-one
             provision-data: "distro: noble"
-            expected-tps: 9
+
+    uses: ./.github/workflows/test-vlm.yaml
+    secrets: inherit
+    with:
+      snap-name: qwen-vl
+      snap-channel: ${{ inputs.snap-channel }}
+      job-queue: ${{ matrix.jobs.job-queue }}
+      provision-data: ${{ matrix.jobs.provision-data }}
+      select-engine: ${{ matrix.jobs.select-engine }}
+      install-nvidia-driver-version: ${{ matrix.jobs.install-nvidia-driver-version }}
+      install-intel-npu-driver: ${{ matrix.jobs.install-intel-npu-driver == true }}
+
+
+  test-chat:
+    name: qwen-vl ${{ matrix.jobs.select-engine }}
+    strategy:
+      fail-fast: false
+      matrix:
+        jobs:
+          # cpu-tiny does not support image input
+          - select-engine: cpu-tiny
+            job-queue: maas-systemtests-amd64
+            provision-data: "distro: noble"
 
     uses: ./.github/workflows/test-chat.yaml
     secrets: inherit
     with:
-      snap-name: deepseek-r1
+      snap-name: qwen-vl
       snap-channel: ${{ inputs.snap-channel }}
       job-queue: ${{ matrix.jobs.job-queue }}
       provision-data: ${{ matrix.jobs.provision-data }}

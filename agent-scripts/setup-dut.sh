@@ -21,6 +21,7 @@ wait_for_snap_changes
 echo "::endgroup::"
 
 echo "::group::Installing machine dependencies"
-_run sudo apt-get install --yes git
+_run_retry sudo apt-get install --yes git curl
 _run sudo snap install go --classic --no-wait
+wait_for_snap_changes
 echo "::endgroup::"

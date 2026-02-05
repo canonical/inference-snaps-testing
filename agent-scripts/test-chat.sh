@@ -10,6 +10,7 @@ until _run bash -c 'echo "hi" | '"$SNAP_NAME"' chat'; do
     echo "Get logs"
     _run sudo snap logs "$SNAP_NAME" -n 300
     echo "::error::Machine: $dut_hostname, chat failed to respond after $((max_retries * 30)) seconds"
+    echo "::endgroup::"
     exit 1
   fi
   echo "✘ Chat failed, retrying in ${retry_delay}s... ($retry_count/$max_retries)"
@@ -28,11 +29,13 @@ echo "$benchmark_result"
 
 result_tps=$(echo "$benchmark_result" | jq .results[0].generation_speed)
 too_low=$(echo "$result_tps < $EXPECTED_TPS" | bc -l)
-echo "::endgroup::"
 
 echo "::notice::Machine: $dut_hostname, Engine: $selected_engine, TPS: $result_tps"
 
 if [ "$too_low" -eq 1 ]; then
   echo "::error::Machine: $dut_hostname, TPS too low: $result_tps"
+  echo "::endgroup::"
   exit 1
 fi
+
+echo "::endgroup::"

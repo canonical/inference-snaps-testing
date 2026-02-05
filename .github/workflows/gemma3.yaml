@@ -10,17 +10,13 @@ on:
         type: string
 
 jobs:
-  test-chat:
+  test-vlm:
     name: gemma3 ${{ matrix.jobs.select-engine }}
     strategy:
       fail-fast: false
       matrix:
         jobs:
           - select-engine: cpu
-            job-queue: maas-systemtests-amd64
-            provision-data: "distro: noble"
-
-          - select-engine: cpu-xsmall
             job-queue: maas-systemtests-amd64
             provision-data: "distro: noble"
 
@@ -39,6 +35,29 @@ jobs:
             install-nvidia-driver-version: 550
 
           # Skip nvidia-gpu-arm64 engine as we do not have a test machine for it
+
+    uses: ./.github/workflows/test-vlm.yaml
+    secrets: inherit
+    with:
+      snap-name: gemma3
+      snap-channel: ${{ inputs.snap-channel }}
+      job-queue: ${{ matrix.jobs.job-queue }}
+      provision-data: ${{ matrix.jobs.provision-data }}
+      select-engine: ${{ matrix.jobs.select-engine }}
+      install-nvidia-driver-version: ${{ matrix.jobs.install-nvidia-driver-version }}
+      install-intel-npu-driver: ${{ matrix.jobs.install-intel-npu-driver == true }}
+
+
+  test-chat:
+    name: gemma3 ${{ matrix.jobs.select-engine }}
+    strategy:
+      fail-fast: false
+      matrix:
+        jobs:
+          # cpu-xsmall engine does not support image input
+          - select-engine: cpu-xsmall
+            job-queue: maas-systemtests-amd64
+            provision-data: "distro: noble"
 
     uses: ./.github/workflows/test-chat.yaml
     secrets: inherit
