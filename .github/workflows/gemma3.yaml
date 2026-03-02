@@ -33,6 +33,10 @@ jobs:
             provision-data: "distro: noble"
             expected-tps: 10
             install-nvidia-driver-version: 550
+          
+          - select-engine: amd-gpu-amd64
+            job-queue: 202203-30094 # Core-i7-12850HX + Radeon PRO W6600M
+            provision-data: "distro: noble"
 
           # Skip nvidia-gpu-arm64 engine as we do not have a test machine for it
 
