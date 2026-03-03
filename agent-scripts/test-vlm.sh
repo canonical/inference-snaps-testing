@@ -51,6 +51,7 @@ while [ $retry_count -lt $max_retries ] && [ "$success" = false ]; do
       _run sudo snap logs "$SNAP_NAME" -n 300
       echo "::error::Failed to look up models: $models_result"
       echo "::endgroup::"
+      sleep 6000
       exit 1
     fi
   fi
