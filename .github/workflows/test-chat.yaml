@@ -69,6 +69,7 @@ jobs:
           Expect TPS: ${{ inputs.expected-tps }}, \
           Install NVIDIA driver: ${{ inputs.install-nvidia-driver-version }}, \
           Install Intel NPU driver: ${{ inputs.install-intel-npu-driver }}, \
+          Manual connections: ${{ inputs.manual-connections }}, \
 
       - name: Checkout code
         uses: actions/checkout@v6
@@ -83,6 +84,7 @@ jobs:
           EXPECTED_TPS: ${{ inputs.expected-tps }}
           INSTALL_NVIDIA_DRIVER_VERSION: ${{ inputs.nvidia-driver-version }}
           INSTALL_INTEL_NPU_DRIVER: ${{ inputs.install-intel-npu-driver }}
+          MANUAL_CONNECTIONS: ${{ inputs.manual-connections }}
 
         run: |
           envsubst \
