@@ -41,6 +41,10 @@ on:
         description: 'Install the Intel NPU driver snap'
         default: false
         type: boolean
+      manual-connections:
+        description: 'Manually connect these snap interfaces after installing the snap, space-separated'
+        required: false
+        type: string
 
   workflow_call:
     inputs: *workflow-inputs
