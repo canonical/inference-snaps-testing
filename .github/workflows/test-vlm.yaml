@@ -41,6 +41,10 @@ on:
         description: 'Install the Intel NPU driver snap'
         default: false
         type: boolean
+      manual-connections:
+        description: 'Manually connect these snap interfaces after installing the snap, space-separated'
+        required: false
+        type: string
 
   workflow_call:
     inputs: *workflow-inputs
@@ -65,7 +69,7 @@ jobs:
           Expect TPS: ${{ inputs.expected-tps }}, \
           Install NVIDIA driver: ${{ inputs.install-nvidia-driver-version }}, \
           Install Intel NPU driver: ${{ inputs.install-intel-npu-driver }}, \
-
+          Manual connections: ${{ inputs.manual-connections }}
       - name: Checkout code
         uses: actions/checkout@v6
 
