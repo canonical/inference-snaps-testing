@@ -37,12 +37,14 @@ until _run $SNAP_NAME status; do
 done
 echo "✔ Snap status succeeded"
 echo "::endgroup::"
-echo "::group::Manual snap connections"
 if [ -n "$MANUAL_CONNECTIONS" ]; then
+  echo "::group::Manual snap connections"
   for connection in $MANUAL_CONNECTIONS; do
     echo "Connecting $connection"
     _run sudo snap connect "$SNAP_NAME:$connection"
   done
+  wait_for_snap_changes
+  echo "::endgroup::"
 fi
 echo "::group::Checking snap connections"
 _run sudo snap connections "$SNAP_NAME"
