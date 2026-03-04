@@ -34,7 +34,7 @@ jobs:
             expected-tps: 10
             install-nvidia-driver-version: 550
           
-          - select-engine: amd-gpu-amd64
+          - select-engine: amd-gpu
             job-queue: 202203-30094 # Core-i7-12850HX + Radeon PRO W6600M
             provision-data: "distro: noble"
             manual-connections: "process-control"
