@@ -37,11 +37,17 @@ until _run $SNAP_NAME status; do
 done
 echo "✔ Snap status succeeded"
 echo "::endgroup::"
-if [ -n "$MANUAL_CONNECTIONS" ]; then
+if [ -n "$SNAP_CONNECTIONS" ]; then
   echo "::group::Manual snap connections"
-  for connection in $MANUAL_CONNECTIONS; do
-    echo "Connecting $connection"
-    _run sudo snap connect "$SNAP_NAME:$connection"
+  # Temporarily set IFS to a comma just for the 'read' command  
+  # -r prevents backslash escaping  
+  # -a assigns the result to an array named 'my_array'  
+  IFS=',' read -r -a my_array <<< "$SNAP_CONNECTIONS"  
+
+  # Iterate over the new array safely  
+  for connection in "${my_array[@]}"; do  
+      echo "Processing: $connection"  
+      _run sudo snap connect $SNAP_NAME:$connection  
   done
   wait_for_snap_changes
   echo "::endgroup::"
