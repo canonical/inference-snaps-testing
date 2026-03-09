@@ -42,7 +42,7 @@ on:
         default: false
         type: boolean
       snap-connections:
-        description: 'Manually connect these snap interfaces after installing the snap, space-separated'
+        description: 'A comma separated list of plugs to connect after installing the snap. A slot can be specified like in the snap connect command.'
         required: false
         type: string
 
