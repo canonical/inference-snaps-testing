@@ -33,6 +33,11 @@ jobs:
             provision-data: "distro: noble"
             expected-tps: 10
             install-nvidia-driver-version: 550
+          
+          - select-engine: amd-gpu
+            job-queue: 202203-30094 # Core-i7-12850HX + Radeon PRO W6600M
+            provision-data: "distro: noble"
+            snap-connections: "process-control"
 
           # Skip nvidia-gpu-arm64 engine as we do not have a test machine for it
 
@@ -46,6 +51,7 @@ jobs:
       select-engine: ${{ matrix.jobs.select-engine }}
       install-nvidia-driver-version: ${{ matrix.jobs.install-nvidia-driver-version }}
       install-intel-npu-driver: ${{ matrix.jobs.install-intel-npu-driver == true }}
+      snap-connections: ${{ matrix.jobs.snap-connections }}
 
 
   test-chat:
@@ -69,3 +75,4 @@ jobs:
       select-engine: ${{ matrix.jobs.select-engine }}
       install-nvidia-driver-version: ${{ matrix.jobs.install-nvidia-driver-version }}
       install-intel-npu-driver: ${{ matrix.jobs.install-intel-npu-driver == true }}
+      snap-connections: ${{ matrix.jobs.snap-connections }}

@@ -41,6 +41,10 @@ on:
         description: 'Install the Intel NPU driver snap'
         default: false
         type: boolean
+      snap-connections:
+        description: 'A comma separated list of plugs to connect after installing the snap. A slot can be specified like in the snap connect command.'
+        required: false
+        type: string
 
   workflow_call:
     inputs: *workflow-inputs
@@ -65,6 +69,7 @@ jobs:
           Expect TPS: ${{ inputs.expected-tps }}, \
           Install NVIDIA driver: ${{ inputs.install-nvidia-driver-version }}, \
           Install Intel NPU driver: ${{ inputs.install-intel-npu-driver }}, \
+          Snap connections: ${{ inputs.snap-connections }}, \
 
       - name: Checkout code
         uses: actions/checkout@v6
@@ -79,6 +84,7 @@ jobs:
           EXPECTED_TPS: ${{ inputs.expected-tps }}
           INSTALL_NVIDIA_DRIVER_VERSION: ${{ inputs.nvidia-driver-version }}
           INSTALL_INTEL_NPU_DRIVER: ${{ inputs.install-intel-npu-driver }}
+          SNAP_CONNECTIONS: ${{ inputs.snap-connections }}
 
         run: |
           envsubst \

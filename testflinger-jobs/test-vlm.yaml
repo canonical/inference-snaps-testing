@@ -25,6 +25,7 @@ test_data:
       export EXPECTED_TPS=$EXPECTED_TPS
       export INSTALL_NVIDIA_DRIVER_VERSION=$INSTALL_NVIDIA_DRIVER_VERSION
       export INSTALL_INTEL_NPU_DRIVER=$INSTALL_INTEL_NPU_DRIVER
+      export SNAP_CONNECTIONS=$SNAP_CONNECTIONS
     echo "::endgroup::"
 
     # For consistency we source all the sub-scripts
