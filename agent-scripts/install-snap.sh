@@ -38,7 +38,7 @@ done
 echo "✔ Snap status succeeded"
 echo "::endgroup::"
 if [ -n "$SNAP_CONNECTIONS" ]; then
-  echo "::group::Manual snap connections"
+  echo "::group::Snap connections"
   # Temporarily set IFS to a comma just for the 'read' command  
   # -r prevents backslash escaping  
   # -a assigns the result to an array named 'my_array'  
