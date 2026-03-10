@@ -31,7 +31,6 @@ jobs:
           - select-engine: nvidia-gpu-amd64
             job-queue: anbox-nvidia-amd64
             provision-data: "distro: noble"
-            expected-tps: 10
             install-nvidia-driver-version: 550
           
           - select-engine: amd-gpu
@@ -64,6 +63,16 @@ jobs:
           - select-engine: cpu-xsmall
             job-queue: maas-systemtests-amd64
             provision-data: "distro: noble"
+          - select-engine: nvidia-gpu-amd64
+            job-queue: anbox-nvidia-amd64
+            provision-data: "distro: noble"
+            expected-tps: 10
+            install-nvidia-driver-version: 550
+          - select-engine: amd-gpu
+            job-queue: 202203-30094 # Core-i7-12850HX + Radeon PRO W6600M
+            provision-data: "distro: noble"
+            expected-tps: 10
+            snap-connections: "process-control"
 
     uses: ./.github/workflows/test-chat.yaml
     secrets: inherit
