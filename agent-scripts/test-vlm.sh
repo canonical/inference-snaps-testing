@@ -1,26 +1,4 @@
 #!/bin/bash -eu
-
-#if [ -z "${CI:-}" ]; then
-#  _run() {
-#    ssh olga.local "$@"
-##    "$@"
-#  }
-#
-#  _put() {
-#    PREFIX="olga.local"
-#
-#    TARGET=${@: -1}
-#    [[ "${TARGET:0:1}" != ":" ]] && TARGET=":${TARGET}"
-#    TARGET=${PREFIX}${TARGET}
-#
-#    # Extract the sources (remove the target) from the argument list
-#    SOURCES_ARRAY=("${@:1:$#-1}")
-#    SOURCES="${SOURCES_ARRAY[@]}"
-#    scp $SOURCES $TARGET
-##    sleep 1
-#  }
-#fi
-
 echo "::group::Getting model name"
 
 status_json=$(_run "$SNAP_NAME" status --format=json)
