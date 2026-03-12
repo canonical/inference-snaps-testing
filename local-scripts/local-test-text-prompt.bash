@@ -12,12 +12,6 @@ echo "::endgroup::"
 
 # For consistency we source all the sub-scripts
 # Some of them export env vars we need later during the test
-source ../agent-scripts/setup-agent.sh
-source ../agent-scripts/setup-dut.sh
-source ../agent-scripts/install-nvidia-driver.sh
-source ../agent-scripts/install-intel-npu-driver.sh
-source ../agent-scripts/install-snap.sh
-source ../agent-scripts/engine-selection.sh
-source ../agent-scripts/test-chat.sh
+source ../agent-scripts/run-scripts.sh
 
 echo "::group::Testflinger cleanup"

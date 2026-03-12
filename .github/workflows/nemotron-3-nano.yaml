@@ -10,7 +10,7 @@ on:
         type: string
 
 jobs:
-  test-chat:
+  test-text-prompt:
     name: nemotron-3-nano ${{ matrix.jobs.select-engine }}
     strategy:
       fail-fast: false
@@ -26,7 +26,7 @@ jobs:
             expected-tps: 10
             install-nvidia-driver-version: 550
 
-    uses: ./.github/workflows/test-chat.yaml
+    uses: ./.github/workflows/test-text-prompt.yaml
     secrets: inherit
     with:
       snap-name: nemotron-3-nano

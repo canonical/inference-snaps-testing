@@ -1,16 +1,15 @@
 #!/bin/bash -eu
 
 export SNAP_NAME="gemma3"
-export SNAP_CHANNEL="latest/edge/IENG-2196-ROCm-support"
+export SNAP_CHANNEL="latest/edge/IENG-2242-shrink-llamacpp-rocm-component-size"
 export SELECT_ENGINE="amd-gpu"
 export EXPECTED_ENGINE=""
 export EXPECTED_TPS=10
 export INSTALL_NVIDIA_DRIVER_VERSION=""
 export INSTALL_INTEL_NPU_DRIVER=""
-export DEVICE_IP="10.102.164.64"
+export DEVICE_IP="10.77.215.208"
 export DEVICE_USER="ubuntu"
 export SNAP_CONNECTIONS="process-control"
-export IS_LOCAL_TEST=false
 echo "SNAP_NAME=$SNAP_NAME"
 echo "SNAP_CHANNEL=$SNAP_CHANNEL"
 echo "SELECT_ENGINE=$SELECT_ENGINE"
@@ -21,4 +20,3 @@ echo "INSTALL_INTEL_NPU_DRIVER=$INSTALL_INTEL_NPU_DRIVER"
 echo "DEVICE_IP=$DEVICE_IP"
 echo "DEVICE_USER=$DEVICE_USER"
 echo "SNAP_CONNECTIONS=$SNAP_CONNECTIONS"
-echo "IS_LOCAL_TEST=$IS_LOCAL_TEST"

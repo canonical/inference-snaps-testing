@@ -10,7 +10,7 @@ on:
         type: string
 
 jobs:
-  test-chat:
+  test-text-prompt:
     name: deepseek-r1 ${{ matrix.jobs.select-engine }}
     strategy:
       fail-fast: false
@@ -61,7 +61,7 @@ jobs:
             provision-data: "distro: noble"
             expected-tps: 9 # Samples: 15.97, 9.93
 
-    uses: ./.github/workflows/test-chat.yaml
+    uses: ./.github/workflows/test-text-prompt.yaml
     secrets: inherit
     with:
       snap-name: deepseek-r1

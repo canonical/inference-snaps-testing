@@ -10,7 +10,7 @@ on:
         type: string
 
 jobs:
-  test-vlm:
+  test-multimodal-prompt:
     name: gemma3 ${{ matrix.jobs.select-engine }}
     strategy:
       fail-fast: false
@@ -41,7 +41,7 @@ jobs:
 
           # Skip nvidia-gpu-arm64 engine as we do not have a test machine for it
 
-    uses: ./.github/workflows/test-vlm.yaml
+    uses: ./.github/workflows/test-multimodal-prompt.yaml
     secrets: inherit
     with:
       snap-name: gemma3
@@ -54,7 +54,7 @@ jobs:
       snap-connections: ${{ matrix.jobs.snap-connections }}
 
 
-  test-chat:
+  test-text-prompt:
     name: gemma3 ${{ matrix.jobs.select-engine }}
     strategy:
       fail-fast: false
@@ -65,7 +65,7 @@ jobs:
             job-queue: maas-systemtests-amd64
             provision-data: "distro: noble"
 
-    uses: ./.github/workflows/test-chat.yaml
+    uses: ./.github/workflows/test-text-prompt.yaml
     secrets: inherit
     with:
       snap-name: gemma3

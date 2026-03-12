@@ -30,12 +30,6 @@ test_data:
 
     # For consistency we source all the sub-scripts
     # Some of them export env vars we need later during the test
-    source ./attachments/test/agent-scripts/setup-agent.sh
-    source ./attachments/test/agent-scripts/setup-dut.sh
-    source ./attachments/test/agent-scripts/install-nvidia-driver.sh
-    source ./attachments/test/agent-scripts/install-intel-npu-driver.sh
-    source ./attachments/test/agent-scripts/install-snap.sh
-    source ./attachments/test/agent-scripts/engine-selection.sh
-    source ./attachments/test/agent-scripts/test-vlm.sh ./attachments/test/agent-scripts/circle.jpg
+    source ./attachments/test/agent-scripts/run-scripts.sh
     
     echo "::group::Testflinger cleanup"
