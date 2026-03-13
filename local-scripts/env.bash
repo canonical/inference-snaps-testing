@@ -1,22 +1,13 @@
-#!/bin/bash -eu
+#!/bin/bash -eux
 
 export SNAP_NAME="gemma3"
-export SNAP_CHANNEL="latest/edge/IENG-2242-shrink-llamacpp-rocm-component-size"
-export SELECT_ENGINE="amd-gpu"
+export SNAP_CHANNEL="latest/edge/IENG-2242-shrink-llamacpp-rocm-component-size" #latest/stable
+export SELECT_ENGINE="amd-gpu" #cpu
 export EXPECTED_ENGINE=""
-export EXPECTED_TPS=10
+export EXPECTED_TPS=10 #0
 export INSTALL_NVIDIA_DRIVER_VERSION=""
 export INSTALL_INTEL_NPU_DRIVER=""
-export DEVICE_IP="10.77.215.208"
-export DEVICE_USER="ubuntu"
-export SNAP_CONNECTIONS="process-control"
-echo "SNAP_NAME=$SNAP_NAME"
-echo "SNAP_CHANNEL=$SNAP_CHANNEL"
-echo "SELECT_ENGINE=$SELECT_ENGINE"
-echo "EXPECTED_ENGINE=$EXPECTED_ENGINE"
-echo "EXPECTED_TPS=$EXPECTED_TPS"
-echo "INSTALL_NVIDIA_DRIVER_VERSION=$INSTALL_NVIDIA_DRIVER_VERSION"
-echo "INSTALL_INTEL_NPU_DRIVER=$INSTALL_INTEL_NPU_DRIVER"
-echo "DEVICE_IP=$DEVICE_IP"
-echo "DEVICE_USER=$DEVICE_USER"
-echo "SNAP_CONNECTIONS=$SNAP_CONNECTIONS"
+export DEVICE_IP="10.77.215.208" # "localhost"
+export DEVICE_USER="ubuntu" #"$USER"
+export SNAP_CONNECTIONS="process-control" #""
+
