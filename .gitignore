@@ -1,0 +1,4 @@
+# This script is created in prompt-vlm.sh
+dut-script.sh
+# This script is created by setup-agent.sh
+install_tools.sh

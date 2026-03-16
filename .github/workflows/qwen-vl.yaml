@@ -10,7 +10,7 @@ on:
         type: string
 
 jobs:
-  test-vlm:
+  test-multimodal-prompt:
     name: qwen-vl ${{ matrix.jobs.select-engine }}
     strategy:
       fail-fast: false
@@ -50,7 +50,7 @@ jobs:
             job-queue: ampere-one
             provision-data: "distro: noble"
 
-    uses: ./.github/workflows/test-vlm.yaml
+    uses: ./.github/workflows/test-multimodal-prompt.yaml
     secrets: inherit
     with:
       snap-name: qwen-vl
@@ -62,7 +62,7 @@ jobs:
       install-intel-npu-driver: ${{ matrix.jobs.install-intel-npu-driver == true }}
 
 
-  test-chat:
+  test-text-prompt:
     name: qwen-vl ${{ matrix.jobs.select-engine }}
     strategy:
       fail-fast: false
@@ -73,7 +73,7 @@ jobs:
             job-queue: maas-systemtests-amd64
             provision-data: "distro: noble"
 
-    uses: ./.github/workflows/test-chat.yaml
+    uses: ./.github/workflows/test-text-prompt.yaml
     secrets: inherit
     with:
       snap-name: qwen-vl

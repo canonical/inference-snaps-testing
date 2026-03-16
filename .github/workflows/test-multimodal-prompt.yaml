@@ -1,4 +1,4 @@
-name: Test chat
+name: Test VLM
 
 on:
   # Manual trigger
@@ -50,12 +50,12 @@ on:
     inputs: *workflow-inputs
 
 jobs:
-  test-chat:
+  test-multimodal-prompt:
     # Need to use self-hosted private endpoint runner to access Testflinger
     runs-on: self-hosted-linux-amd64-noble-private-endpoint-medium
 
     env:
-      JOB_FILE: testflinger-jobs/test-chat.yaml
+      JOB_FILE: testflinger-jobs/test-multimodal-prompt.yaml
 
     steps:
       - name: Show configuration
@@ -70,7 +70,6 @@ jobs:
           Install NVIDIA driver: ${{ inputs.install-nvidia-driver-version }}, \
           Install Intel NPU driver: ${{ inputs.install-intel-npu-driver }}, \
           Snap connections: ${{ inputs.snap-connections }}, \
-
       - name: Checkout code
         uses: actions/checkout@v6
 
