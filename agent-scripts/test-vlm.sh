@@ -1,5 +1,7 @@
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
+# For consistency we source all the sub-scripts
+# Some of them export env vars we need later during the test
 source "${SCRIPT_DIR}/setup-agent.sh"
 source "${SCRIPT_DIR}/setup-dut.sh"
 source "${SCRIPT_DIR}/install-nvidia-driver.sh"
