@@ -28,8 +28,6 @@ test_data:
       export SNAP_CONNECTIONS=$SNAP_CONNECTIONS
     echo "::endgroup::"
 
-    # For consistency we source all the sub-scripts
-    # Some of them export env vars we need later during the test
-    source ./attachments/test/agent-scripts/test-vlm.sh
+    ./attachments/test/agent-scripts/test-vlm.sh
     
     echo "::group::Testflinger cleanup"
