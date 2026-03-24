@@ -17,11 +17,11 @@ echo "::group::Selecting engine"
 # Retry if use-engine exits with a non-zero exit code.
 select_timeout=7200
 poll_interval=30
-max_retries=5
 start_time=$(date +%s)
 
-for attempt in $(seq 1 $max_retries); do
-  echo "Running \"$SNAP_NAME use-engine\" (attempt $attempt/$max_retries)"
+while true; do
+  attempt=$(( attempt + 1 )) 2>/dev/null || attempt=1
+  echo "Running \"$SNAP_NAME use-engine\" (attempt $attempt)"
 
   _run sudo "$SNAP_NAME" use-engine "$SELECT_ENGINE" &
   use_engine_pid=$!
@@ -59,18 +59,12 @@ for attempt in $(seq 1 $max_retries); do
     break
   fi
 
-  echo "✘ Selecting engine failed with exit code $exit_code (attempt $attempt/$max_retries)"
-  if [ "$attempt" -ge "$max_retries" ]; then
-    echo "::error::Machine: $dut_hostname, selecting engine failed after $max_retries attempts"
-    echo "Get logs"
-    _run sudo journalctl -a | grep "$SNAP_NAME"
-    echo "::endgroup::"
-    exit 1
-  fi
+  echo "✘ Selecting engine failed with exit code $exit_code (attempt $attempt)"
 
   # Check if we hit the timeout
   elapsed=$(( $(date +%s) - start_time ))
   if [ "$elapsed" -ge "$select_timeout" ]; then
+    echo "::error::Machine: $dut_hostname, selecting engine failed after ${elapsed}s"
     echo "Get logs"
     _run sudo journalctl -a | grep "$SNAP_NAME"
     echo "::endgroup::"
