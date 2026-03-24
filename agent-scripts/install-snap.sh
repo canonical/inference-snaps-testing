@@ -10,7 +10,7 @@ echo "Remove $SNAP_NAME if already installed"
 _run sudo snap remove "$SNAP_NAME" --no-wait
 wait_for_snap_changes
 
-max_retries=5
+max_retries=3
 snap_installed=0
 
 for attempt in $(seq 1 $max_retries); do
