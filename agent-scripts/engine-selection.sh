@@ -1,8 +1,6 @@
 #!/bin/bash -eu
 
 # Select an engine if the configuration is set, otherwise do auto selection
-# This is to trigger component download in case it failed during installation
-
 if [[ -n "${SELECT_ENGINE}" ]]; then
   # Set expected engine to the selected one
   EXPECTED_ENGINE=$SELECT_ENGINE
@@ -54,6 +52,8 @@ for attempt in $(seq 1 $max_retries); do
   fi
 
   echo "✘ Selecting engine failed with exit code $exit_code (attempt $attempt/$max_retries)"
+  # On older snaps the download of components times out. Wait for snapd to finish before retrying.
+  wait_for_snap_changes
 done
 
 if [ $engine_selected -eq 0 ]; then
@@ -66,6 +66,7 @@ fi
 
 
 # Restart server after changing engine
+echo "Restarting snap"
 _run sudo snap restart "$SNAP_NAME"
 wait_for_snap_changes
 
