@@ -14,52 +14,69 @@ echo "::group::Selecting engine"
 # Engine might install multiple large components and can run for a long time
 # without producing any output. Run in the background and print elapsed time
 # periodically so the CI runner does not consider the job stalled.
-# Retry up to 5 times if use-engine exits with a non-zero exit code.
-max_timeout=7200
+# Retry if use-engine exits with a non-zero exit code.
+select_timeout=7200
 poll_interval=30
 max_retries=5
-use_engine_exit_code=1
 start_time=$(date +%s)
 
 for attempt in $(seq 1 $max_retries); do
-  echo "▶ Running $SNAP_NAME use-engine (attempt $attempt/$max_retries)..."
+  echo "Running \"$SNAP_NAME use-engine\" (attempt $attempt/$max_retries)"
 
   _run sudo "$SNAP_NAME" use-engine "$SELECT_ENGINE" &
   use_engine_pid=$!
 
-  while kill -0 "$use_engine_pid" 2>/dev/null; do
-    sleep "$poll_interval"
-    elapsed=$(( $(date +%s) - start_time ))
-    echo "⏳ $SNAP_NAME use-engine still running... elapsed: ${elapsed}s"
+  # Background poller: print elapsed time periodically to avoid CI timeout,
+  # and kill use-engine if the global timeout is exceeded.
+  (
+    while kill -0 "$use_engine_pid" 2>/dev/null; do
+      sleep "$poll_interval"
+      elapsed=$(( $(date +%s) - start_time ))
+      echo "⏳ still running: ${elapsed}s"
 
-    if [ "$elapsed" -ge "$max_timeout" ]; then
-      echo "::error::Machine: $dut_hostname, failed to use-engine after ${elapsed}s (timeout: ${max_timeout}s)"
-      kill "$use_engine_pid" 2>/dev/null || true
-      wait "$use_engine_pid" 2>/dev/null || true
-      echo "Get logs"
-      _run sudo journalctl -a | grep "$SNAP_NAME"
-      echo "::endgroup::"
-      exit 1
-    fi
-  done
+      if [ "$elapsed" -ge "$select_timeout" ]; then
+        echo "::error::Machine: $dut_hostname, timeout selecting engine after ${elapsed}s"
+        kill "$use_engine_pid" 2>/dev/null || true
+        break
+      fi
+    done
+  ) &
+  poller_pid=$!
 
-  wait "$use_engine_pid"
-  use_engine_exit_code=$?
-  elapsed=$(( $(date +%s) - start_time ))
+  # Wait and capture use-engine's exit code. Done in an if to avoid exiting the script on non-zero.
+  if wait "$use_engine_pid"; then
+    exit_code=0
+  else
+    exit_code=$?
+  fi
 
-  if [ "$use_engine_exit_code" -eq 0 ]; then
-    echo "✔ Selecting engine succeeded (attempt $attempt/$max_retries, elapsed: ${elapsed}s)"
+  # Stop the poller if still running
+  kill "$poller_pid" || true
+  wait "$poller_pid" || true
+
+  if [ "$exit_code" -eq 0 ]; then
+    echo "✔ Selecting engine succeeded"
     break
   fi
 
-  echo "✘ use-engine failed after ${elapsed}s with exit code $use_engine_exit_code (attempt $attempt/$max_retries)"
+  echo "✘ Selecting engine failed with exit code $exit_code (attempt $attempt/$max_retries)"
   if [ "$attempt" -ge "$max_retries" ]; then
+    echo "::error::Machine: $dut_hostname, selecting engine failed after $max_retries attempts"
     echo "Get logs"
     _run sudo journalctl -a | grep "$SNAP_NAME"
-    echo "::error::Machine: $dut_hostname, use-engine failed after $max_retries attempts"
     echo "::endgroup::"
     exit 1
   fi
+
+  # Check if we hit the timeout
+  elapsed=$(( $(date +%s) - start_time ))
+  if [ "$elapsed" -ge "$select_timeout" ]; then
+    echo "Get logs"
+    _run sudo journalctl -a | grep "$SNAP_NAME"
+    echo "::endgroup::"
+    exit 1
+  fi
+
 done
 
 # Restart server after changing engine
