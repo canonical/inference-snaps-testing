@@ -1,8 +1,6 @@
 #!/bin/bash -eu
 
 # Select an engine if the configuration is set, otherwise do auto selection
-# This is to trigger component download in case it failed during installation
-
 if [[ -n "${SELECT_ENGINE}" ]]; then
   # Set expected engine to the selected one
   EXPECTED_ENGINE=$SELECT_ENGINE
@@ -11,26 +9,64 @@ else
 fi
 
 echo "::group::Selecting engine"
-# Engine might install multiple large components.
-# Retry periodically to install missing components.
-max_retries=30
-retry_count=0
-retry_delay=60
-until _run sudo "$SNAP_NAME" use-engine "$SELECT_ENGINE"; do
-  retry_count=$((retry_count + 1))
-  if [ $retry_count -ge $max_retries ]; then
-    echo "Get logs"
-    _run sudo journalctl -a | grep "$SNAP_NAME"
-    echo "::error::Machine: $dut_hostname, failed to use-engine after trying $((max_retries * 30)) seconds"
-    echo "::endgroup::"
-    exit 1
+# Engine might install multiple large components and can run for a long time
+# without producing any output. Run in the background and print elapsed time
+# periodically so the CI runner does not consider the job stalled.
+# Retry if use-engine exits with a non-zero exit code.
+max_retries=3
+poll_interval=30
+engine_selected=0
+
+for attempt in $(seq 1 $max_retries); do
+  echo "Running \"$SNAP_NAME use-engine\" (attempt $attempt/$max_retries)"
+
+  _run sudo "$SNAP_NAME" use-engine "$SELECT_ENGINE" &
+  use_engine_pid=$!
+
+  # Background poller: print elapsed time periodically to avoid CI timeout.
+  (
+    elapsed=0
+    while kill -0 "$use_engine_pid" 2>/dev/null; do
+      sleep "$poll_interval"
+      elapsed=$(( elapsed + poll_interval ))
+      echo "⏳ still running: ${elapsed}s"
+    done
+  ) &
+  poller_pid=$!
+
+  # Wait and capture use-engine's exit code. Done in an if to avoid exiting the script on non-zero.
+  if wait "$use_engine_pid"; then
+    exit_code=0
+  else
+    exit_code=$?
   fi
-  echo "✘ $SNAP_NAME use-engine failed, retrying in ${retry_delay}s... ($retry_count/$max_retries)"
-  sleep $retry_delay
+
+  # Stop the poller if still running
+  kill "$poller_pid" || true
+  wait "$poller_pid" || true
+
+  if [ "$exit_code" -eq 0 ]; then
+    echo "✔ Selecting engine succeeded"
+    engine_selected=1
+    break
+  fi
+
+  echo "✘ Selecting engine failed with exit code $exit_code (attempt $attempt/$max_retries)"
+  # On older snaps the download of components times out. Wait for snapd to finish before retrying.
+  wait_for_snap_changes
 done
-echo "✔ Selecting engine succeeded"
+
+if [ $engine_selected -eq 0 ]; then
+  echo "Get logs"
+  _run sudo journalctl -a | grep "$SNAP_NAME"
+  echo "::error::Machine: $dut_hostname, failed selecting engine after $max_retries tries"
+  echo "::endgroup::"
+  exit 1
+fi
+
 
 # Restart server after changing engine
+echo "Restarting snap"
 _run sudo snap restart "$SNAP_NAME"
 wait_for_snap_changes
 
