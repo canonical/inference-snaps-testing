@@ -73,7 +73,7 @@ on:
     inputs: *workflow-inputs
 
 jobs:
-  composable-test:
+  test-snap:
     # Need to use self-hosted private endpoint runner to access Testflinger
     runs-on: self-hosted-linux-amd64-noble-private-endpoint-small
 
@@ -120,7 +120,7 @@ jobs:
           SNAP_NAME: ${{ inputs.snap-name }}
           SNAP_CHANNEL: ${{ inputs.snap-channel }}
 
-          INSTALL_NVIDIA_DRIVER_VERSION: ${{ inputs.nvidia-driver-version }}
+          INSTALL_NVIDIA_DRIVER_VERSION: ${{ inputs.install-nvidia-driver-version }}
           INSTALL_INTEL_NPU_DRIVER: ${{ inputs.install-intel-npu-driver }}
           SNAP_CONNECTIONS: ${{ inputs.snap-connections }}
 
