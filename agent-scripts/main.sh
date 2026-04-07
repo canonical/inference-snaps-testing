@@ -4,6 +4,9 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 # All available tests are listed here. Test conditions are checked in each subscript.
 
+# Use ubuntu for DUT username if DEVICE_USER is not set
+export DEVICE_USER="${DEVICE_USER:-ubuntu}"
+
 # Setup
 source "${SCRIPT_DIR}/setup-agent.sh"
 source "${SCRIPT_DIR}/setup-dut.sh"
