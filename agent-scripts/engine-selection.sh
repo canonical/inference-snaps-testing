@@ -53,7 +53,7 @@ for attempt in $(seq 1 $max_retries); do
 
   echo "✘ Selecting engine failed with exit code $exit_code (attempt $attempt/$max_retries)"
   # On older snaps the download of components times out. Wait for snapd to finish before retrying.
-  wait_for_snap_changes
+  wait-for-snap-changes
 done
 
 if [ $engine_selected -eq 0 ]; then
@@ -68,7 +68,7 @@ fi
 # Restart server after changing engine
 echo "Restarting snap"
 _run sudo snap restart "$SNAP_NAME"
-wait_for_snap_changes
+wait-for-snap-changes
 
 echo "::endgroup::"
 

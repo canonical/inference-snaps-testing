@@ -12,7 +12,7 @@ if [ -n "$SNAP_CONNECTIONS" ]; then
       echo "Processing: $connection"
       _run sudo snap connect $SNAP_NAME:$connection
   done
-  wait_for_snap_changes
+  wait-for-snap-changes
   echo "::endgroup::"
 fi
 echo "::group::Checking snap connections"

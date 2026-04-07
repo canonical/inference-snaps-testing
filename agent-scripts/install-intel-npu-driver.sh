@@ -7,5 +7,5 @@ fi
 
 echo "::group::Installing Intel NPU driver snap"
 _run_retry sudo snap install intel-npu-driver
-wait_for_snap_changes
+wait-for-snap-changes
 echo "::endgroup::"

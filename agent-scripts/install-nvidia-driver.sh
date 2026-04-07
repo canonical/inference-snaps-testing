@@ -18,5 +18,5 @@ ssh "$DEVICE_USER"@"$DEVICE_IP" "(sleep 3 && sudo reboot) &"
 sleep 10
 
 # Wait for reboot
-wait_for_ssh --allow-degraded || exit 1
+wait-for-ssh --allow-degraded || exit 1
 echo "::endgroup::"
