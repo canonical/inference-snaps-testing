@@ -1,4 +1,10 @@
 #!/bin/bash -eu
+
+if [ "${TEST_IMAGE_PROMPT:-}" != "true" ]; then
+  echo "TEST_IMAGE_PROMPT is not true; skipping vlm test"
+  return 0
+fi
+
 echo "::group::Getting model name"
 
 status_json=$(_run "$SNAP_NAME" status --format=json)

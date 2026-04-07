@@ -1,5 +1,10 @@
 #!/bin/bash -eu
 
+if [ "${TEST_CHAT_TPS:-}" != "true" ]; then
+  echo "TEST_CHAT_TPS is not true; skipping chat TPS benchmark"
+  return 0
+fi
+
 echo "::group::Waiting to chat"
 max_retries=20
 retry_count=0

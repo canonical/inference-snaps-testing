@@ -16,70 +16,79 @@ jobs:
       fail-fast: false
       matrix:
         jobs:
-          - select-engine: cpu
-            job-queue: maas-systemtests-amd64
+          - job-queue: maas-systemtests-amd64
             provision-data: "distro: noble"
+            select-engine: cpu
+            test-chat-tps: true
+            test-image-prompt: true
 
-          - select-engine: cpu-avx512
-            job-queue: 202409-35502
+          - job-queue: 202409-35502
             provision-data: "distro: noble"
+            select-engine: cpu-avx512
+            test-chat-tps: true
+            test-image-prompt: true
 
-          - select-engine: intel-cpu
-            job-queue: mir-intel-noble
+          - job-queue: mir-intel-noble
             provision-data: "distro: noble"
+            select-engine: intel-cpu
+            test-chat-tps: true
+            test-image-prompt: true
 
-          - select-engine: intel-gpu
-            job-queue: 202111-29603 # Alder Lake, GPU 8086:4680
+          - job-queue: 202111-29603 # Alder Lake, GPU 8086:4680
             provision-data: "distro: noble"
+            select-engine: intel-gpu
+            test-chat-tps: true
+            test-image-prompt: true
 
-          - select-engine: intel-npu
-            job-queue: hp-prodesk-4-sff-g1i-desktop-ai-pc-ag8j7av-c36704
+          - job-queue: hp-prodesk-4-sff-g1i-desktop-ai-pc-ag8j7av-c36704
             provision-data: "url: https://tel-image-cache.canonical.com/oem-share/sutton/releases/noble/oem-24.04c/20251009-80/sutton-noble-oem-24.04c-20251009-80.iso"
             install-intel-npu-driver: true
+            select-engine: intel-npu
+            test-chat-tps: false # npu engine does not work with text only input
+            test-image-prompt: true
 
-          - select-engine: cuda
-            job-queue: anbox-nvidia-amd64
+          - job-queue: anbox-nvidia-amd64
             provision-data: "distro: noble"
             install-nvidia-driver-version: 550
+            select-engine: cuda
+            test-chat-tps: true
+            test-image-prompt: true
 
-          - select-engine: ampere-altra
-            job-queue: ampere-altra
+          - job-queue: ampere-altra
             provision-data: "distro: noble"
+            select-engine: ampere-altra
+            test-chat-tps: true
+            test-image-prompt: true
 
-          - select-engine: ampere-one
-            job-queue: ampere-one
+          - job-queue: ampere-one
             provision-data: "distro: noble"
+            select-engine: ampere-one
+            test-chat-tps: true
+            test-image-prompt: true
 
-    uses: ./.github/workflows/test-multimodal-prompt.yaml
+          - job-queue: maas-systemtests-amd64
+            provision-data: "distro: noble"
+            select-engine: cpu-tiny
+            test-chat-tps: true
+            test-image-prompt: false # cpu-tiny does not support image input
+
+    uses: ./.github/workflows/test-snap.yaml
     secrets: inherit
     with:
-      snap-name: qwen-vl
-      snap-channel: ${{ inputs.snap-channel }}
       job-queue: ${{ matrix.jobs.job-queue }}
       provision-data: ${{ matrix.jobs.provision-data }}
-      select-engine: ${{ matrix.jobs.select-engine }}
-      install-nvidia-driver-version: ${{ matrix.jobs.install-nvidia-driver-version }}
-      install-intel-npu-driver: ${{ matrix.jobs.install-intel-npu-driver == true }}
 
-
-  test-text-prompt:
-    name: qwen-vl ${{ matrix.jobs.select-engine }}
-    strategy:
-      fail-fast: false
-      matrix:
-        jobs:
-          # cpu-tiny does not support image input
-          - select-engine: cpu-tiny
-            job-queue: maas-systemtests-amd64
-            provision-data: "distro: noble"
-
-    uses: ./.github/workflows/test-text-prompt.yaml
-    secrets: inherit
-    with:
-      snap-name: qwen-vl
+      snap-name: deepseek-r1
       snap-channel: ${{ inputs.snap-channel }}
-      job-queue: ${{ matrix.jobs.job-queue }}
-      provision-data: ${{ matrix.jobs.provision-data }}
-      select-engine: ${{ matrix.jobs.select-engine }}
+
       install-nvidia-driver-version: ${{ matrix.jobs.install-nvidia-driver-version }}
       install-intel-npu-driver: ${{ matrix.jobs.install-intel-npu-driver == true }}
+      snap-connections: ${{ matrix.jobs.snap-connections }}
+
+      expected-engine: ${{ matrix.jobs.expected-engine }}
+      select-engine: ${{ matrix.jobs.select-engine }}
+
+      test-chat-tps: ${{ matrix.jobs.test-chat-tps }}
+      expected-tps: ${{ matrix.jobs.expected-tps }}
+
+      test-image-prompt: ${{ matrix.jobs.test-image-prompt }}

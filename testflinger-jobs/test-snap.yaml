@@ -1,8 +1,5 @@
 job_queue: $JOB_QUEUE
 
-provision_data:
-  distro: noble
-
 test_data:
   # Copy test scripts to the Testflinger Agent
   attachments:
@@ -20,14 +17,21 @@ test_data:
       # These vars are replaced by envsubst in the caller.
       export SNAP_NAME=$SNAP_NAME
       export SNAP_CHANNEL=$SNAP_CHANNEL
-      export SELECT_ENGINE=$SELECT_ENGINE
-      export EXPECTED_ENGINE=$EXPECTED_ENGINE
-      export EXPECTED_TPS=$EXPECTED_TPS
+    
       export INSTALL_NVIDIA_DRIVER_VERSION=$INSTALL_NVIDIA_DRIVER_VERSION
       export INSTALL_INTEL_NPU_DRIVER=$INSTALL_INTEL_NPU_DRIVER
       export SNAP_CONNECTIONS=$SNAP_CONNECTIONS
+    
+      export EXPECTED_ENGINE=$EXPECTED_ENGINE
+      export SELECT_ENGINE=$SELECT_ENGINE
+    
+      export TEST_CHAT_TPS=$TEST_CHAT_TPS
+      export EXPECTED_TPS=$EXPECTED_TPS
+    
+      export TEST_IMAGE_PROMPT=$TEST_IMAGE_PROMPT
+    
     echo "::endgroup::"
 
-    ./attachments/test/agent-scripts/test-llm.sh
+    ./attachments/test/agent-scripts/main.sh
     
     echo "::group::Testflinger cleanup"
