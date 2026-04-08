@@ -44,7 +44,7 @@ jobs:
       expected-engine: ${{ matrix.jobs.expected-engine }}
       select-engine: ${{ matrix.jobs.select-engine }}
 
-      test-chat-tps: ${{ matrix.jobs.test-chat-tps }}
+      test-chat-tps: ${{ matrix.jobs.test-chat-tps == true }}
       expected-tps: ${{ matrix.jobs.expected-tps }}
 
-      test-image-prompt: ${{ matrix.jobs.test-image-prompt }}
+      test-image-prompt: ${{ matrix.jobs.test-image-prompt == true }}
