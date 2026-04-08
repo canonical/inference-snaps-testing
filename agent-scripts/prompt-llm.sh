@@ -38,6 +38,8 @@ too_low=$(echo "$result_tps < $EXPECTED_TPS" | bc -l)
 echo "::notice::Machine: $dut_hostname, Engine: $selected_engine, TPS: $result_tps"
 
 if [ "$too_low" -eq 1 ]; then
+  echo "Get logs"
+  _run sudo snap logs "$SNAP_NAME" -n 300
   echo "::error::Machine: $dut_hostname, TPS too low: $result_tps"
   echo "::endgroup::"
   exit 1

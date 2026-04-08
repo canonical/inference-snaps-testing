@@ -136,6 +136,8 @@ while [ $retry_count -lt $max_retries ] && [ "$success" = false ]; do
       sleep $retry_delay
       continue
     else
+      echo "Get logs"
+      _run sudo snap logs "$SNAP_NAME" -n 300
       echo "::error::Response is not valid JSON: $response"
       echo "::endgroup::"
       exit 1
@@ -154,6 +156,8 @@ while [ $retry_count -lt $max_retries ] && [ "$success" = false ]; do
       sleep $retry_delay
       continue
     else
+      echo "Get logs"
+      _run sudo snap logs "$SNAP_NAME" -n 300
       echo "::error::Response message empty: $response"
       echo "::endgroup::"
       exit 1
@@ -166,6 +170,8 @@ done
 
 # Convert response to lower case and check if it contains the word "circle"
 if [[ "${response_content,,}" != *circle* ]]; then
+  echo "Get logs"
+  _run sudo snap logs "$SNAP_NAME" -n 300
   echo "::notice::Response does not contain the word 'circle' $response_content"
   echo "$response"
   echo "::endgroup::"
