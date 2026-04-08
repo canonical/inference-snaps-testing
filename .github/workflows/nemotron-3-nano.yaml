@@ -34,7 +34,7 @@ jobs:
       job-queue: ${{ matrix.jobs.job-queue }}
       provision-data: ${{ matrix.jobs.provision-data }}
 
-      snap-name: deepseek-r1
+      snap-name: nemotron-3-nano
       snap-channel: ${{ inputs.snap-channel }}
 
       install-nvidia-driver-version: ${{ matrix.jobs.install-nvidia-driver-version }}
