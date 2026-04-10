@@ -1,7 +1,7 @@
 #!/bin/bash -eux
 
 # Local or testflinger machine ssh details
-export DEVICE_IP="olga.local"
+export DEVICE_IP="localhost"
 export DEVICE_USER=$USER
 
 # Snap to test
@@ -15,7 +15,7 @@ export SNAP_CONNECTIONS=""
 
 # Autoselection is always performed during snap installation
 export EXPECTED_ENGINE=""
-export SELECT_ENGINE="nvidia-gpu-amd64"
+export SELECT_ENGINE="cpu"
 
 # Test chat prompt and check TPS
 export TEST_CHAT_TPS="true"
