@@ -1,5 +1,10 @@
 #!/bin/bash -eu
 
+if [ "${TEST_CHAT_TPS:-}" != "true" ]; then
+  echo "TEST_CHAT_TPS is not true; skipping chat TPS benchmark"
+  return 0
+fi
+
 echo "::group::Waiting to chat"
 max_retries=20
 retry_count=0
@@ -33,6 +38,8 @@ too_low=$(echo "$result_tps < $EXPECTED_TPS" | bc -l)
 echo "::notice::Machine: $dut_hostname, Engine: $selected_engine, TPS: $result_tps"
 
 if [ "$too_low" -eq 1 ]; then
+  echo "Get logs"
+  _run sudo snap logs "$SNAP_NAME" -n 300
   echo "::error::Machine: $dut_hostname, TPS too low: $result_tps"
   echo "::endgroup::"
   exit 1
