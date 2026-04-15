@@ -78,7 +78,7 @@ jobs:
     runs-on: self-hosted-linux-amd64-noble-private-endpoint-small
 
     env:
-      JOB_FILE: /tmp/workflow-repo/testflinger-jobs/test-snap.yaml
+      JOB_FILE: ${{ github.workspace }}/workflow-repo/testflinger-jobs/test-snap.yaml
 
     steps:
       - name: Show configuration
@@ -115,7 +115,7 @@ jobs:
         uses: actions/checkout@v6
         with:
           repository: canonical/inference-snaps-testing
-          path: /tmp/workflow-repo
+          path: workflow-repo
 
       - name: Add configuration to job
         # This step substitutes the env vars in the testflinger job file with their values from workflow inputs
