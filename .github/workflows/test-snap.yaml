@@ -106,10 +106,6 @@ jobs:
            \
           Image prompt \
           Perform test: ${{ inputs.test-image-prompt }}, \
-          
-
-      - name: Checkout caller repo
-        uses: actions/checkout@v6
 
       - name: Checkout workflow template repo
         uses: actions/checkout@v6
