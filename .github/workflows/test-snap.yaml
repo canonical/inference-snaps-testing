@@ -110,6 +110,9 @@ jobs:
 
       - name: Checkout code
         uses: actions/checkout@v6
+        with:
+          repository: canonical/inference-snaps-testing
+          path: inference-snaps-testing
 
       - name: Add configuration to job
         # This step substitutes the env vars in the testflinger job file with their values from workflow inputs
