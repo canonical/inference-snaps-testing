@@ -76,9 +76,10 @@ jobs:
   test-snap:
     # Need to use self-hosted private endpoint runner to access Testflinger
     runs-on: self-hosted-linux-amd64-noble-private-endpoint-small
+    name: ${{ inputs.select-engine }} (${{ inputs.job-queue }})
 
     env:
-      JOB_FILE: testflinger-jobs/test-snap.yaml
+      JOB_FILE: ${{ github.workspace }}/inference-snaps-testing/testflinger-jobs/test-snap.yaml
 
     steps:
       - name: Show configuration
@@ -106,10 +107,12 @@ jobs:
            \
           Image prompt \
           Perform test: ${{ inputs.test-image-prompt }}, \
-          
 
-      - name: Checkout code
+      - name: Checkout reusable workflow repo
         uses: actions/checkout@v6
+        with:
+          repository: canonical/inference-snaps-testing
+          path: workflow-repo
 
       - name: Add configuration to job
         # This step substitutes the env vars in the testflinger job file with their values from workflow inputs
