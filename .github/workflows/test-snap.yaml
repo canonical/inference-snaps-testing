@@ -79,7 +79,7 @@ jobs:
     name: ${{ inputs.select-engine }} (${{ inputs.job-queue }})
 
     env:
-      JOB_FILE: ${{ github.workspace }}/workflow-repo/testflinger-jobs/test-snap.yaml
+      JOB_FILE: ${{ github.workspace }}/inference-snaps-testing/testflinger-jobs/test-snap.yaml
 
     steps:
       - name: Show configuration
@@ -108,7 +108,7 @@ jobs:
           Image prompt \
           Perform test: ${{ inputs.test-image-prompt }}, \
 
-      - name: Checkout workflow template repo
+      - name: Checkout reusable workflow repo
         uses: actions/checkout@v6
         with:
           repository: canonical/inference-snaps-testing
