@@ -107,7 +107,7 @@ jobs:
            \
           Image prompt \
           Perform test: ${{ inputs.test-image-prompt }}, \
-          
+
       - name: Checkout code
         uses: actions/checkout@v6
         with:
