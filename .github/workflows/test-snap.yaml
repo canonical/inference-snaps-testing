@@ -108,7 +108,7 @@ jobs:
           Image prompt \
           Perform test: ${{ inputs.test-image-prompt }}, \
 
-      - name: Checkout code
+      - name: Checkout reusable workflow repo
         uses: actions/checkout@v6
         with:
           repository: canonical/inference-snaps-testing
