@@ -72,6 +72,9 @@ on:
   workflow_call:
     inputs: *workflow-inputs
 
+env:
+  REPO_PATH: inference-snaps-testing
+
 jobs:
   test-snap:
     # Need to use self-hosted private endpoint runner to access Testflinger
@@ -79,7 +82,6 @@ jobs:
     name: ${{ inputs.select-engine }} (${{ inputs.job-queue }})
 
     env:
-      REPO_PATH: inference-snaps-testing
       JOB_FILE: ${{ github.workspace }}/${{ env.REPO_PATH }}/testflinger-jobs/test-snap.yaml
 
     steps:
