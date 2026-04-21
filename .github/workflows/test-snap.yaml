@@ -79,7 +79,8 @@ jobs:
     name: ${{ inputs.select-engine }} (${{ inputs.job-queue }})
 
     env:
-      JOB_FILE: ${{ github.workspace }}/inference-snaps-testing/testflinger-jobs/test-snap.yaml
+      REUSABLE_WORKFLOW_REPO: inference-snaps-testing 
+      REUSABLE_JOB_FILE: ${{ github.workspace }}/inference-snaps-testing/testflinger-jobs/test-snap.yaml
 
     steps:
       - name: Show configuration
@@ -112,7 +113,7 @@ jobs:
         uses: actions/checkout@v6
         with:
           repository: canonical/inference-snaps-testing
-          path: workflow-repo
+          path: ${{ env.REUSABLE_WORKFLOW_REPO }}
 
       - name: Add configuration to job
         # This step substitutes the env vars in the testflinger job file with their values from workflow inputs
@@ -137,9 +138,9 @@ jobs:
 
         run: |
           envsubst \
-            < ${{ env.JOB_FILE }} \
-            > ${{ env.JOB_FILE }}.temp
-          mv ${{ env.JOB_FILE }}.temp ${{ env.JOB_FILE }}
+            < ${{ env.REUSABLE_JOB_FILE }} \
+            > ${{ env.REUSABLE_JOB_FILE }}.temp
+          mv ${{ env.REUSABLE_JOB_FILE }}.temp ${{ env.REUSABLE_JOB_FILE }}
 
       - name: Add provision data to job if set
         if: inputs.provision-data != ''
@@ -149,16 +150,16 @@ jobs:
           yq eval '
           .provision_data = (strenv(PROVISION_DATA) | from_yaml) |
           .provision_data style=""
-          ' -i ${{ env.JOB_FILE }}
+          ' -i ${{ env.REUSABLE_JOB_FILE }}
 
       - name: Show testflinger job
         run: |
-          cat ${{ env.JOB_FILE }}
+          cat ${{ env.REUSABLE_JOB_FILE }}
 
       - name: Run testflinger job
         uses: canonical/testflinger/.github/actions/submit@main
         with:
           poll: true
-          job-path: ${{ env.JOB_FILE }}
+          job-path: ${{ env.REUSABLE_JOB_FILE }}
           client-id: ${{ vars.TESTFLINGER_CLIENT_ID }}
           secret-key: ${{ secrets.TESTFLINGER_SECRET_KEY }}
