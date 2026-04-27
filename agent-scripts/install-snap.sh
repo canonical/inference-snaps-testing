@@ -15,7 +15,12 @@ snap_installed=0
 
 for attempt in $(seq 1 $max_retries); do
   echo "Installing $SNAP_NAME from $SNAP_CHANNEL (attempt $attempt/$max_retries)"
-  _run sudo snap install "$SNAP_NAME" --channel "$SNAP_CHANNEL" --no-wait
+  if [ "${DEV_MODE:-false}" = true ]; then
+    snap_install_cmd=(sudo snap install "$SNAP_NAME" --channel "$SNAP_CHANNEL" --devmode --no-wait)
+  else
+    snap_install_cmd=(sudo snap install "$SNAP_NAME" --channel "$SNAP_CHANNEL" --no-wait)
+  fi
+  _run "${snap_install_cmd[@]}"
   wait-for-snap-changes
 
   # Check if installation succeeded with `snap status`
