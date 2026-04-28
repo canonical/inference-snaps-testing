@@ -118,8 +118,8 @@ jobs:
         uses: actions/checkout@v6
         with:
           repository: canonical/inference-snaps-testing
-          ref: ${{ github.workflow_sha }}
           path: ${{ env.REUSABLE_WORKFLOW_REPO }}
+          ref: add-devmode
 
       - name: Add configuration to job
         # This step substitutes the env vars in the testflinger job file with their values from workflow inputs
