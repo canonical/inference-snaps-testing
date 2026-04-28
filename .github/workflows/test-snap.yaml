@@ -96,6 +96,7 @@ jobs:
           Snap \
           Name: ${{ inputs.snap-name }}, \
           Channel: ${{ inputs.snap-channel }}, \
+          Dev mode: ${{ inputs.dev-mode }}, \
            \
           Prerequisites \
           NVIDIA driver: ${{ inputs.install-nvidia-driver-version }}, \
@@ -117,6 +118,7 @@ jobs:
         uses: actions/checkout@v6
         with:
           repository: canonical/inference-snaps-testing
+          ref: ${{ github.workflow_sha }}
           path: ${{ env.REUSABLE_WORKFLOW_REPO }}
 
       - name: Add configuration to job
