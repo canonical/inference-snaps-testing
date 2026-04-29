@@ -23,6 +23,10 @@ on:
         description: 'Snap store channel'
         required: true
         type: string
+      devmode:
+        description: 'Whether to install the snap in developer mode'
+        default: false
+        type: boolean
 
       # Drivers and other prerequisites to set up before installation of the snap
       install-nvidia-driver-version:
@@ -92,6 +96,7 @@ jobs:
           Snap \
           Name: ${{ inputs.snap-name }}, \
           Channel: ${{ inputs.snap-channel }}, \
+          Devmode: ${{ inputs.devmode }}, \
            \
           Prerequisites \
           NVIDIA driver: ${{ inputs.install-nvidia-driver-version }}, \
@@ -114,6 +119,9 @@ jobs:
         with:
           repository: canonical/inference-snaps-testing
           path: ${{ env.REUSABLE_WORKFLOW_REPO }}
+          # If developing and testing changes to the reusable workflow, ref should be the branch with those changes.
+          # If not present, the default branch (v1) will be used.
+          # ref: <branch>
 
       - name: Add configuration to job
         # This step substitutes the env vars in the testflinger job file with their values from workflow inputs
@@ -123,6 +131,7 @@ jobs:
 
           SNAP_NAME: ${{ inputs.snap-name }}
           SNAP_CHANNEL: ${{ inputs.snap-channel }}
+          DEVMODE: ${{ inputs.devmode }}
 
           INSTALL_NVIDIA_DRIVER_VERSION: ${{ inputs.install-nvidia-driver-version }}
           INSTALL_INTEL_NPU_DRIVER: ${{ inputs.install-intel-npu-driver }}
