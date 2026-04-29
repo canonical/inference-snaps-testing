@@ -23,7 +23,7 @@ on:
         description: 'Snap store channel'
         required: true
         type: string
-      dev-mode:
+      devmode:
         description: 'Whether to install the snap in dev mode (allowing connections to non-strict snaps)'
         default: false
         type: boolean
@@ -96,7 +96,7 @@ jobs:
           Snap \
           Name: ${{ inputs.snap-name }}, \
           Channel: ${{ inputs.snap-channel }}, \
-          Dev mode: ${{ inputs.dev-mode }}, \
+          Devmode: ${{ inputs.devmode }}, \
            \
           Prerequisites \
           NVIDIA driver: ${{ inputs.install-nvidia-driver-version }}, \
@@ -131,7 +131,7 @@ jobs:
 
           SNAP_NAME: ${{ inputs.snap-name }}
           SNAP_CHANNEL: ${{ inputs.snap-channel }}
-          DEV_MODE: ${{ inputs.dev-mode }}
+          DEV_MODE: ${{ inputs.devmode }}
 
           INSTALL_NVIDIA_DRIVER_VERSION: ${{ inputs.install-nvidia-driver-version }}
           INSTALL_INTEL_NPU_DRIVER: ${{ inputs.install-intel-npu-driver }}
