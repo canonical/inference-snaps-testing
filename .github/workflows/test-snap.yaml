@@ -119,7 +119,9 @@ jobs:
         with:
           repository: canonical/inference-snaps-testing
           path: ${{ env.REUSABLE_WORKFLOW_REPO }}
-          ref: add-devmode
+          # If developing and testing changes to the reusable workflow, ref should be the branch with those changes.
+          # If not present, the default branch (v1) will be used.
+          #ref: add-devmode
 
       - name: Add configuration to job
         # This step substitutes the env vars in the testflinger job file with their values from workflow inputs
