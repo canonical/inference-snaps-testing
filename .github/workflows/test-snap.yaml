@@ -131,7 +131,7 @@ jobs:
 
           SNAP_NAME: ${{ inputs.snap-name }}
           SNAP_CHANNEL: ${{ inputs.snap-channel }}
-          DEV_MODE: ${{ inputs.devmode }}
+          DEVMODE: ${{ inputs.devmode }}
 
           INSTALL_NVIDIA_DRIVER_VERSION: ${{ inputs.install-nvidia-driver-version }}
           INSTALL_INTEL_NPU_DRIVER: ${{ inputs.install-intel-npu-driver }}
