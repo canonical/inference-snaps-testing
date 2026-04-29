@@ -24,7 +24,7 @@ on:
         required: true
         type: string
       devmode:
-        description: 'Whether to install the snap in dev mode (allowing connections to non-strict snaps)'
+        description: 'Whether to install the snap in developer mode'
         default: false
         type: boolean
 
