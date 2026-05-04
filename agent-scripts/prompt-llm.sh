@@ -13,7 +13,7 @@ until _run bash -c 'echo "hi" | '"$SNAP_NAME"' chat'; do
   retry_count=$((retry_count + 1))
   if [ $retry_count -ge $max_retries ]; then
     echo "Get logs"
-    _run sudo snap logs "$SNAP_NAME" -n 300
+    _run sudo snap logs "$SNAP_NAME" -n 1000
     echo "::error::Machine: $dut_hostname, chat failed to respond after $((max_retries * 30)) seconds"
     echo "::endgroup::"
     exit 1
@@ -39,7 +39,7 @@ echo "::notice::Machine: $dut_hostname, Engine: $selected_engine, TPS: $result_t
 
 if [ "$too_low" -eq 1 ]; then
   echo "Get logs"
-  _run sudo snap logs "$SNAP_NAME" -n 300
+  _run sudo snap logs "$SNAP_NAME" -n 1000
   echo "::error::Machine: $dut_hostname, TPS too low: $result_tps"
   echo "::endgroup::"
   exit 1
