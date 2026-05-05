@@ -121,7 +121,7 @@ jobs:
           path: ${{ env.REUSABLE_WORKFLOW_REPO }}
           # If developing and testing changes to the reusable workflow, ref should be the branch with those changes.
           # If not present, the default branch (v1) will be used.
-          # ref: <branch>
+          ref: increase-ssh-timeout
 
       - name: Add configuration to job
         # This step substitutes the env vars in the testflinger job file with their values from workflow inputs
