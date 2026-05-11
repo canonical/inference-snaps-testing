@@ -89,7 +89,8 @@ payload="{
       ]
     }
   ],
-  \"max_tokens\": 300
+  \"max_tokens\": 300,
+  \"chat_template_kwargs\": {\"enable_thinking\": false}
 }"
 
 # The _run macro has issues handling quotes and newlines. To work around this we add the
