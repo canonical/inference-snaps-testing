@@ -89,7 +89,7 @@ payload="{
       ]
     }
   ],
-  \"max_tokens\": 3000
+  \"max_tokens\": 300
 }"
 
 # The _run macro has issues handling quotes and newlines. To work around this we add the
