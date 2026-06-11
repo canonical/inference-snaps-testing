@@ -173,3 +173,4 @@ jobs:
           client-id: ${{ vars.TESTFLINGER_CLIENT_ID }}
           secret-key: ${{ secrets.TESTFLINGER_SECRET_KEY }}
           provision-max-retries: 3
+          provision-timeout: "15m"
