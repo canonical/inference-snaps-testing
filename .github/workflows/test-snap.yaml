@@ -79,7 +79,7 @@ on:
 jobs:
   test-snap:
     # Need to use self-hosted private endpoint runner to access Testflinger
-    runs-on: workshop
+    runs-on: self-hosted-linux-amd64-noble-private-endpoint-small
     name: ${{ inputs.select-engine }} (${{ inputs.job-queue }})
 
     env:
