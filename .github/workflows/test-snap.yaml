@@ -166,9 +166,10 @@ jobs:
           cat ${{ env.REUSABLE_JOB_FILE }}
 
       - name: Run testflinger job
-        uses: canonical/testflinger/.github/actions/submit@main
+        uses: jpm-canonical/testflinger/.github/actions/submit@retry-submit
         with:
           poll: true
           job-path: ${{ env.REUSABLE_JOB_FILE }}
           client-id: ${{ vars.TESTFLINGER_CLIENT_ID }}
           secret-key: ${{ secrets.TESTFLINGER_SECRET_KEY }}
+          provision-max-retries: 3
