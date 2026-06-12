@@ -23,10 +23,13 @@ for attempt in $(seq 1 $max_retries); do
   _run "${snap_install_cmd[@]}"
   wait-for-snap-changes
 
-  # Check if installation succeeded with `snap status`
-  if _run "$SNAP_NAME" status; then
+  # Check if snap is installed by running it
+  if _run "$SNAP_NAME" &> /dev/null; then
+    echo "Snap $SNAP_NAME installed successfully"
     snap_installed=1
     break
+  else
+    echo "Snap $SNAP_NAME not found after installation attempt $attempt"
   fi
 done
 
