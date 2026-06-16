@@ -20,7 +20,7 @@ engine_selected=0
 for attempt in $(seq 1 $max_retries); do
   echo "Running \"$SNAP_NAME use-engine\" (attempt $attempt/$max_retries)"
 
-  _run sudo "$SNAP_NAME" use-engine "$SELECT_ENGINE" &
+  _run sudo "$SNAP_NAME" use-engine "$SELECT_ENGINE" --assume-yes &
   use_engine_pid=$!
 
   # Background poller: print elapsed time periodically to avoid CI timeout.
