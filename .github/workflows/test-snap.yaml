@@ -5,8 +5,8 @@ on:
   workflow_dispatch:
     inputs: &workflow-inputs
       testflinger-client-id:
-        description: Testflinger client ID
-        required: true
+        description: Testflinger client ID (defaults to TESTFLINGER_CLIENT_ID repo variable)
+        required: false
         type: string
       job-queue:
         description: 'Testflinger queue'
@@ -80,7 +80,7 @@ on:
     inputs: *workflow-inputs
     secrets:
       testflinger-secret-key:
-        description: Testflinger secret key
+        description: Testflinger secret key (defaults to TESTFLINGER_SECRET_KEY repo secret)
         required: true
 
 jobs:
@@ -177,4 +177,5 @@ jobs:
         with:
           poll: true
           job-path: ${{ env.REUSABLE_JOB_FILE }}
+          client-id: ${{ inputs.testflinger-client-id || vars.TESTFLINGER_CLIENT_ID }}
           secret-key: ${{ secrets.testflinger-secret-key || secrets.TESTFLINGER_SECRET_KEY }}
