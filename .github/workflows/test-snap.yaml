@@ -81,7 +81,7 @@ on:
     secrets:
       testflinger-secret-key:
         description: Testflinger secret key (defaults to TESTFLINGER_SECRET_KEY repo secret)
-        required: true
+        required: false
 
 jobs:
   test-snap:
