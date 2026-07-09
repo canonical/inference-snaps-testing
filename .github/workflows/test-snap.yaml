@@ -4,7 +4,10 @@ on:
   # Manual trigger
   workflow_dispatch:
     inputs: &workflow-inputs
-      # Testflinger device
+      testflinger-client-id:
+        description: Testflinger client ID
+        required: true
+        type: string
       job-queue:
         description: 'Testflinger queue'
         required: true
@@ -76,11 +79,8 @@ on:
   workflow_call:
     inputs: *workflow-inputs
     secrets:
-      testflinger-client-id:
-        description: Testflinger client ID for test job
-        required: true
       testflinger-secret-key:
-        description: Testflinger secret key for test job
+        description: Testflinger secret key
         required: true
 
 jobs:
@@ -177,5 +177,5 @@ jobs:
         with:
           poll: true
           job-path: ${{ env.REUSABLE_JOB_FILE }}
-          client-id: ${{ secrets.testflinger-client-id }}
+          client-id: ${{ inputs.testflinger-client-id }}
           secret-key: ${{ secrets.testflinger-secret-key }}
