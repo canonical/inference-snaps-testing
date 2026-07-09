@@ -75,6 +75,13 @@ on:
 
   workflow_call:
     inputs: *workflow-inputs
+    secrets:
+      testflinger-client-id:
+        description: Testflinger client ID for test job
+        required: true
+      testflinger-secret-key:
+        description: Testflinger secret key for test job
+        required: true
 
 jobs:
   test-snap:
@@ -170,5 +177,5 @@ jobs:
         with:
           poll: true
           job-path: ${{ env.REUSABLE_JOB_FILE }}
-          client-id: ${{ vars.TESTFLINGER_CLIENT_ID }}
-          secret-key: ${{ secrets.TESTFLINGER_SECRET_KEY }}
+          client-id: ${{ secrets.testflinger-client-id }}
+          secret-key: ${{ secrets.testflinger-secret-key }}
