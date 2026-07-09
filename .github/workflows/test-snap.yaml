@@ -177,5 +177,4 @@ jobs:
         with:
           poll: true
           job-path: ${{ env.REUSABLE_JOB_FILE }}
-          client-id: ${{ inputs.testflinger-client-id }}
-          secret-key: ${{ secrets.testflinger-secret-key }}
+          secret-key: ${{ secrets.testflinger-secret-key || secrets.TESTFLINGER_SECRET_KEY }}
