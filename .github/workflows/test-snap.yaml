@@ -82,6 +82,9 @@ on:
       testflinger-secret-key:
         description: Testflinger secret key (defaults to TESTFLINGER_SECRET_KEY repo secret)
         required: false
+      logs-secret:
+        description: CSV list of words to mask in this job's logs
+        required: false
 
 jobs:
   test-snap:
@@ -94,6 +97,19 @@ jobs:
       REUSABLE_JOB_FILE: ${{ github.workspace }}/inference-snaps-testing/testflinger-jobs/test-snap.yaml
 
     steps:
+      - name: Mask sensitive words in logs
+        env:
+          LOGS_SECRET: ${{ secrets.logs-secret }}
+        run: |
+          # Register each comma-separated word from logs-secret as a masked value.
+          # add-mask is per-job, so this must run in the job that produces the logs.
+          IFS=',' read -ra words <<< "$LOGS_SECRET"
+          for w in "${words[@]}"; do
+            # Trim leading/trailing whitespace
+            w="$(printf '%s' "$w" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
+            [ -n "$w" ] && echo "::add-mask::$w"
+          done
+
       - name: Show configuration
         run: |
           echo ::notice::\
@@ -128,7 +144,7 @@ jobs:
           path: ${{ env.REUSABLE_WORKFLOW_REPO }}
           # If developing and testing changes to the reusable workflow, ref should be the branch with those changes.
           # If not present, the default branch (v1) will be used.
-          # ref: <branch>
+          ref: secrets-management
 
       - name: Add configuration to job
         # This step substitutes the env vars in the testflinger job file with their values from workflow inputs
