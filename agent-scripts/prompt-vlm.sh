@@ -77,14 +77,14 @@ payload="{
       \"role\": \"user\",
       \"content\": [
         {
-          \"type\": \"text\",
-          \"text\": \"what is in this image\"
-        },
-        {
           \"type\": \"image_url\",
           \"image_url\": {
             \"url\": \"data:image/jpeg;base64,${image_data}\"
           }
+        },
+        {
+          \"type\": \"text\",
+          \"text\": \"what is in this image\"
         }
       ]
     }
