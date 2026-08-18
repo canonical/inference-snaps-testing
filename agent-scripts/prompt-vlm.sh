@@ -8,7 +8,12 @@ fi
 echo "::group::Getting model name"
 
 status_json=$(_run "$SNAP_NAME" status --format=json)
-api_url=$(echo "$status_json" | jq -r '.endpoints.openai')
+api_url=$(echo "$status_json" | jq -r '.entrypoints.openai.url // empty')
+if [ -z "$api_url" ]; then
+  echo "::error::OpenAI entrypoint URL not found in status"
+  echo "$status_json"
+  exit 1
+fi
 echo "API URL: $api_url"
 
 # Retry model lookup in a loop, as server might not be ready
