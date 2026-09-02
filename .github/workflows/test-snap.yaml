@@ -33,15 +33,9 @@ on:
 
       # Drivers and other prerequisites to set up before installation of the snap
       install-nvidia-driver:
-        description: 'Install the NVIDIA driver (uses install-nvidia-driver-version, or the default version if unset)'
+        description: 'Install the NVIDIA driver'
         default: false
         type: boolean
-      # TODO: Add the default NVIDIA driver version here. For now it is separate for backwards compatibility with existing workflows.
-      install-nvidia-driver-version:
-        description: 'NVIDIA driver version to install. Overrides the default version. Setting this also enables installation for backwards compatibility.'
-        required: false
-        type: string
-        default: ""
       install-intel-npu-driver:
         description: 'Install the Intel NPU driver snap'
         default: false
@@ -98,8 +92,7 @@ jobs:
     env:
       REUSABLE_WORKFLOW_REPO: inference-snaps-testing 
       REUSABLE_JOB_FILE: ${{ github.workspace }}/inference-snaps-testing/testflinger-jobs/test-snap.yaml
-      # Default NVIDIA driver version used when install-nvidia-driver is true and no version is given.
-      DEFAULT_NVIDIA_DRIVER_VERSION: "595"
+      NVIDIA_DRIVER_VERSION: '595'
 
     steps:
       - name: Show configuration
@@ -148,11 +141,7 @@ jobs:
           SNAP_CHANNEL: ${{ inputs.snap-channel }}
           DEVMODE: ${{ inputs.devmode }}
 
-          # TODO: remove this once the default NVIDIA driver version handling is fully integrated in existing workflows
-          # Effective NVIDIA driver version: an explicit version wins (and enables install for
-          # backwards compatibility); otherwise the boolean flag selects the default version;
-          # otherwise it is empty and the driver installation is skipped.
-          INSTALL_NVIDIA_DRIVER_VERSION: ${{ inputs.install-nvidia-driver-version != '' && inputs.install-nvidia-driver-version || (inputs.install-nvidia-driver && env.DEFAULT_NVIDIA_DRIVER_VERSION || '') }}
+          INSTALL_NVIDIA_DRIVER_VERSION: ${{ inputs.install-nvidia-driver && env.NVIDIA_DRIVER_VERSION || '' }}
           INSTALL_INTEL_NPU_DRIVER: ${{ inputs.install-intel-npu-driver }}
           SNAP_CONNECTIONS: ${{ inputs.snap-connections }}
 
