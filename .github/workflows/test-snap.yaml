@@ -36,7 +36,7 @@ on:
         description: 'Install the NVIDIA driver (uses install-nvidia-driver-version, or the default version if unset)'
         default: false
         type: boolean
-      # TODO: Add the default NVIDIA driver version here. For now it is separate for retrocompatibility with existing workflows.
+      # TODO: Add the default NVIDIA driver version here. For now it is separate for backwards compatibility with existing workflows.
       install-nvidia-driver-version:
         description: 'NVIDIA driver version to install. Overrides the default version. Setting this also enables installation for backwards compatibility.'
         required: false
