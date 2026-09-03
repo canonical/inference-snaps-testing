@@ -33,7 +33,7 @@ on:
 
       # Drivers and other prerequisites to set up before installation of the snap
       install-nvidia-driver-version:
-        description: 'NVIDIA driver version to install. Set to a version like 595, default to use NVIDIA_DRIVER_VERSION from this workflow, latest to install the newest archive version, or leave empty to skip installation.'
+        description: 'NVIDIA driver version to install. Set to a version like 595, stable to use NVIDIA_DRIVER_VERSION from this workflow, latest to install the newest archive version, or leave empty to skip installation.'
         required: false
         type: string
       install-intel-npu-driver:
@@ -141,7 +141,7 @@ jobs:
           SNAP_CHANNEL: ${{ inputs.snap-channel }}
           DEVMODE: ${{ inputs.devmode }}
 
-          INSTALL_NVIDIA_DRIVER_VERSION: ${{ inputs.install-nvidia-driver-version == 'default' && env.NVIDIA_DRIVER_VERSION || inputs.install-nvidia-driver-version }}
+          INSTALL_NVIDIA_DRIVER_VERSION: ${{ inputs.install-nvidia-driver-version == 'stable' && env.NVIDIA_DRIVER_VERSION || inputs.install-nvidia-driver-version }}
           INSTALL_INTEL_NPU_DRIVER: ${{ inputs.install-intel-npu-driver }}
           SNAP_CONNECTIONS: ${{ inputs.snap-connections }}
 
