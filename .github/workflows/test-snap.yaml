@@ -32,10 +32,10 @@ on:
         type: boolean
 
       # Drivers and other prerequisites to set up before installation of the snap
-      install-nvidia-driver:
-        description: 'Install the NVIDIA driver'
-        default: false
-        type: boolean
+      install-nvidia-driver-version:
+        description: 'NVIDIA driver version to install. Set to a version like 595, default to use NVIDIA_DRIVER_VERSION from this workflow, latest to install the newest archive version, or leave empty to skip installation.'
+        required: false
+        type: string
       install-intel-npu-driver:
         description: 'Install the Intel NPU driver snap'
         default: false
@@ -107,7 +107,7 @@ jobs:
           Devmode: ${{ inputs.devmode }}, \
            \
           Prerequisites \
-          NVIDIA driver: ${{ inputs.install-nvidia-driver }}, \
+          NVIDIA driver: ${{ inputs.install-nvidia-driver-version }}, \
           Intel NPU driver: ${{ inputs.install-intel-npu-driver }}, \
           Snap connections: ${{ inputs.snap-connections }}, \
            \
@@ -129,7 +129,7 @@ jobs:
           path: ${{ env.REUSABLE_WORKFLOW_REPO }}
           # If developing and testing changes to the reusable workflow, ref should be the branch with those changes.
           # If not present, the default branch (v1) will be used.
-          # ref: <branch>
+          ref: IENG-2500-default-nvidia-driver
 
       - name: Add configuration to job
         # This step substitutes the env vars in the testflinger job file with their values from workflow inputs
@@ -141,7 +141,7 @@ jobs:
           SNAP_CHANNEL: ${{ inputs.snap-channel }}
           DEVMODE: ${{ inputs.devmode }}
 
-          INSTALL_NVIDIA_DRIVER_VERSION: ${{ inputs.install-nvidia-driver && env.NVIDIA_DRIVER_VERSION || '' }}
+          INSTALL_NVIDIA_DRIVER_VERSION: ${{ inputs.install-nvidia-driver-version == 'default' && env.NVIDIA_DRIVER_VERSION || inputs.install-nvidia-driver-version }}
           INSTALL_INTEL_NPU_DRIVER: ${{ inputs.install-intel-npu-driver }}
           SNAP_CONNECTIONS: ${{ inputs.snap-connections }}
 
