@@ -33,7 +33,7 @@ on:
 
       # Drivers and other prerequisites to set up before installation of the snap
       install-nvidia-driver-version:
-        description: 'NVIDIA driver version to install. Set to a version like 595, stable to use NVIDIA_DRIVER_VERSION from this workflow, latest to install the newest archive version, or leave empty to skip installation.'
+        description: 'NVIDIA driver version to install. Set to a version like 595, stable to use STABLE_NVIDIA_DRIVER_VERSION from this workflow, latest to install the newest archive version, or leave empty to skip installation.'
         required: false
         type: string
       install-intel-npu-driver:
@@ -92,7 +92,7 @@ jobs:
     env:
       REUSABLE_WORKFLOW_REPO: inference-snaps-testing 
       REUSABLE_JOB_FILE: ${{ github.workspace }}/inference-snaps-testing/testflinger-jobs/test-snap.yaml
-      NVIDIA_DRIVER_VERSION: '595'
+      STABLE_NVIDIA_DRIVER_VERSION: '595'
 
     steps:
       - name: Show configuration
@@ -141,7 +141,7 @@ jobs:
           SNAP_CHANNEL: ${{ inputs.snap-channel }}
           DEVMODE: ${{ inputs.devmode }}
 
-          INSTALL_NVIDIA_DRIVER_VERSION: ${{ inputs.install-nvidia-driver-version == 'stable' && env.NVIDIA_DRIVER_VERSION || inputs.install-nvidia-driver-version }}
+          INSTALL_NVIDIA_DRIVER_VERSION: ${{ inputs.install-nvidia-driver-version == 'stable' && env.STABLE_NVIDIA_DRIVER_VERSION || inputs.install-nvidia-driver-version }}
           INSTALL_INTEL_NPU_DRIVER: ${{ inputs.install-intel-npu-driver }}
           SNAP_CONNECTIONS: ${{ inputs.snap-connections }}
 
