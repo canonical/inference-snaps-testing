@@ -33,7 +33,12 @@ on:
 
       # Drivers and other prerequisites to set up before installation of the snap
       install-nvidia-driver-version:
-        description: 'NVIDIA driver version to install. Set to a version like 595, stable to use STABLE_NVIDIA_DRIVER_VERSION from this workflow, latest to install the newest archive version, or leave empty to skip installation.'
+        description: |
+          NVIDIA driver version to install.
+          To install a specific version, set to the version, such as "595".
+          Set to "stable" to use STABLE_NVIDIA_DRIVER_VERSION from this workflow.
+          Set to "latest" to install the newest archive version.
+          Leave it unset to skip installation.
         required: false
         type: string
       install-intel-npu-driver:
@@ -41,7 +46,9 @@ on:
         default: false
         type: boolean
       snap-connections:
-        description: 'A comma separated list of plugs to connect after installing the snap. A slot can be specified like in the snap connect command.'
+        description: |
+          A comma separated list of plugs to connect after installing the snap.
+          A slot can be specified like in the snap connect command.
         required: false
         type: string
 
