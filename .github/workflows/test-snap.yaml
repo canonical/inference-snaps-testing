@@ -184,6 +184,7 @@ jobs:
         uses: canonical/testflinger/.github/actions/submit@main
         with:
           poll: true
+          retries: 3
           job-path: ${{ env.REUSABLE_JOB_FILE }}
           client-id: ${{ inputs.testflinger-client-id || vars.TESTFLINGER_CLIENT_ID }}
           secret-key: ${{ secrets.testflinger-secret-key || secrets.TESTFLINGER_SECRET_KEY }}
