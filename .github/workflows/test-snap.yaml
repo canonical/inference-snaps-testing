@@ -137,6 +137,11 @@ jobs:
           # If not present, the default branch (v1) will be used.
           # ref: <branch>
 
+      - name: Install workflow dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes --no-install-recommends gettext-base
+
       - name: Add configuration to job
         # This step substitutes the env vars in the testflinger job file with their values from workflow inputs
         env:
