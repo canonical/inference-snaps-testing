@@ -92,7 +92,7 @@ on:
 
 jobs:
   test-snap:
-    runs-on: ubuntu-slim
+    runs-on: ubuntu-latest
     name: ${{ inputs.select-engine }} (${{ inputs.job-queue }})
 
     env:
